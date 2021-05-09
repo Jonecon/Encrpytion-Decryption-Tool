@@ -4,7 +4,7 @@ public class Vigenere {
 
     public static void main(String[] args) {
         try {
-            String key = args[0];
+            String key = capitalise(args[0]);
             System.out.println(key);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String message = reader.readLine();
