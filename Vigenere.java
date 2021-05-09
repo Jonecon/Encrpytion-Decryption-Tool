@@ -4,7 +4,7 @@ public class Vigenere {
 
     public static void main(String[] args) {
         try {
-            String key = capitalise(args[0]);
+            String key = args[0];
             System.out.println(key);
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String message = reader.readLine();
@@ -26,7 +26,7 @@ public class Vigenere {
 
     public static String encode(String message, String key) {
         String cipherText = "";
-        char[] keyArray = key.toCharArray();
+        char[] keyArray = capitalise(key).toCharArray();
         int i = 0;
         for (char c: message.toCharArray()) {
             if (Character.isLetter(c)) {
