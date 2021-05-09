@@ -3,6 +3,7 @@ import java.io.*;
 public class Vigenere {
 
     public static void main(String[] args) {
+        // using main for testing, probably wont need in future
         try {
             String key = args[0];
             System.out.println(key);
@@ -10,37 +11,15 @@ public class Vigenere {
             String message = reader.readLine();
             System.out.println(message);
             System.out.println(Tools.simplifyMessage(message));
-            String cipherText = encode(message, key);
+            String cipherText = vigenere(message, key);
             System.out.println(cipherText);
+            System.out.println(vigenere(cipherText, key, true));
             reader.close();
 
         } catch(Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    public static String encode(String message, String key) {
-        String cipherText = "";
-        char[] keyArray = key.toUpperCase().toCharArray();
-        int i = 0;
-        for (char c: message.toCharArray()) {
-            if (Character.isLetter(c)) {
-                boolean capital = false;
-                if (Character.isUpperCase(c)) {
-                    c = Character.toLowerCase(c);
-                    capital = true;
-                }
-                int offset = (int)keyArray[i] - 65;
-                c = shiftLetter(c, offset);
-                if (capital) {
-                    c = Character.toUpperCase(c);
-                }
-                i = (i + 1) % keyArray.length;
-            }
-            cipherText += c;
-        }
-        return cipherText;
     }
 
     private static char shiftLetter(char c, int offset) {
@@ -55,11 +34,35 @@ public class Vigenere {
     }
 
 
-    public static String decode(String cipherText, String key) {
-        return cipherText;
+    public static String vigenere(String input, String key, boolean decrypt) {
+        String message = "";
+        char[] keyArray = key.toUpperCase().toCharArray();
+        int i = 0;
+        for (char c: input.toCharArray()) {
+            if (Character.isLetter(c)) {
+                boolean capital = false;
+                if (Character.isUpperCase(c)) {
+                    c = Character.toLowerCase(c);
+                    capital = true;
+                }
+                int offset = (int)keyArray[i] - 65;
+                c = shiftLetter(c, decrypt ? -offset : offset);
+                if (capital) {
+                    c = Character.toUpperCase(c);
+                }
+                i = (i + 1) % keyArray.length;
+            }
+            message += c;
+        }
+        return message;
     }
+
+    public static String vigenere(String input, String key) {
+        return vigenere(input, key, false);
+    }
+
     // method to (try to) decode without a key
-    public static String decode(String cipherText) {
-        return cipherText;
-    }
+    // public static String decode(String cipherText) {
+    //     return cipherText;
+    // }
 }
