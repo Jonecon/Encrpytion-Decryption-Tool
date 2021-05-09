@@ -9,11 +9,7 @@ public class Vigenere {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
             String message = reader.readLine();
             System.out.println(message);
-            // message = removeSpaces(message);
-            // System.out.println(message);
-            // message = capitalise(message);
-            // System.out.println(message);
-            // System.out.println();
+            System.out.println(Tools.simplifyMessage(message));
             String cipherText = encode(message, key);
             System.out.println(cipherText);
             reader.close();
@@ -26,7 +22,7 @@ public class Vigenere {
 
     public static String encode(String message, String key) {
         String cipherText = "";
-        char[] keyArray = capitalise(key).toCharArray();
+        char[] keyArray = key.toUpperCase().toCharArray();
         int i = 0;
         for (char c: message.toCharArray()) {
             if (Character.isLetter(c)) {
@@ -54,13 +50,10 @@ public class Vigenere {
         return (char)ascii;
     }
 
-    private static String removeSpaces(String message) {
+    public static String removeSpaces(String message) {
         return message.replaceAll("\\s", "");
     }
 
-    private static String capitalise(String message) {
-        return message.toUpperCase();
-    }
 
     public static String decode(String cipherText, String key) {
         return cipherText;
