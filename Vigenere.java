@@ -11,9 +11,9 @@ public class Vigenere {
             System.out.println(message);
             // message = removeSpaces(message);
             // System.out.println(message);
-            message = capitalise(message);
-            System.out.println(message);
-            System.out.println();
+            // message = capitalise(message);
+            // System.out.println(message);
+            // System.out.println();
             String cipherText = encode(message, key);
             System.out.println(cipherText);
             reader.close();
@@ -30,20 +30,27 @@ public class Vigenere {
         int i = 0;
         for (char c: message.toCharArray()) {
             if (Character.isLetter(c)) {
+                boolean capital = false;
+                if (Character.isUpperCase(c)) {
+                    c = Character.toLowerCase(c);
+                    capital = true;
+                }
                 int offset = (int)keyArray[i] - 65;
-                cipherText += shiftLetter(c, offset);
+                c = shiftLetter(c, offset);
+                if (capital) {
+                    c = Character.toUpperCase(c);
+                }
                 i = (i + 1) % keyArray.length;
-            } else {
-               cipherText += c;
             }
+            cipherText += c;
         }
         return cipherText;
     }
 
     private static char shiftLetter(char c, int offset) {
-        int ascii = (int)c - 65;
+        int ascii = (int)c - 97;
         ascii = (ascii + offset) % 26;
-        ascii += 65;
+        ascii += 97;
         return (char)ascii;
     }
 
