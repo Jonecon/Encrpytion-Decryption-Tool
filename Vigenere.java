@@ -1,3 +1,4 @@
+
 import java.io.*;
 
 public class Vigenere {
@@ -23,10 +24,19 @@ public class Vigenere {
     }
 
     private static char shiftLetter(char c, int offset) {
+        boolean capital = false;
+        if (Character.isUpperCase(c)) {
+            c = Character.toLowerCase(c);
+            capital = true;
+        }
         int ascii = (int)c - 97;
-        ascii = (ascii + offset) % 26;
+        ascii = (ascii + offset + 26) % 26;
         ascii += 97;
-        return (char)ascii;
+        c = (char)ascii;
+        if (capital) {
+            c = Character.toUpperCase(c);
+        }
+        return c;
     }
 
     public static String removeSpaces(String message) {
@@ -40,16 +50,8 @@ public class Vigenere {
         int i = 0;
         for (char c: input.toCharArray()) {
             if (Character.isLetter(c)) {
-                boolean capital = false;
-                if (Character.isUpperCase(c)) {
-                    c = Character.toLowerCase(c);
-                    capital = true;
-                }
                 int offset = (int)keyArray[i] - 65;
                 c = shiftLetter(c, decrypt ? -offset : offset);
-                if (capital) {
-                    c = Character.toUpperCase(c);
-                }
                 i = (i + 1) % keyArray.length;
             }
             message += c;
