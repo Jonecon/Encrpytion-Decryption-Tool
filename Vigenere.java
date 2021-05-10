@@ -11,9 +11,9 @@ public class Vigenere {
             String message = reader.readLine();
             System.out.println(message);
             System.out.println(Tools.simplifyMessage(message));
-            String cipherText = vigenere(message, key);
+            String cipherText = encrypt(message, key);
             System.out.println(cipherText);
-            System.out.println(vigenere(cipherText, key, true));
+            System.out.println(decrypt(cipherText, key));
             reader.close();
 
         } catch(Exception e) {
@@ -34,7 +34,7 @@ public class Vigenere {
     }
 
 
-    public static String vigenere(String input, String key, boolean decrypt) {
+    private static String vigenere(String input, String key, boolean decrypt) {
         String message = "";
         char[] keyArray = key.toUpperCase().toCharArray();
         int i = 0;
@@ -57,9 +57,14 @@ public class Vigenere {
         return message;
     }
 
-    public static String vigenere(String input, String key) {
+    public static String encrypt(String input, String key) {
         return vigenere(input, key, false);
     }
+    public static String decrypt(String input, String key) {
+        return vigenere(input, key, true);
+    }
+
+
 
     // method to (try to) decode without a key
     // public static String decode(String cipherText) {
