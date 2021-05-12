@@ -6,6 +6,10 @@ import java.util.stream.*;
 public class Caesar {
 
     public static void main(String[] args) {
+
+        // example call:
+        // type testfiles/message.txt | java Caesar > outputfile.txt
+        // this takes the contents from message.txt and puts it into outputfile.txt
         // using main for testing, probably wont need in future
         try {
             int shift = Integer.parseInt(args[0]);

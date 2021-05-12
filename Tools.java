@@ -49,6 +49,10 @@ public class Tools {
         return output;
     }
 
+    // reads a file from the standard input(stdin)
+    // returns the file as a string
+    // files can be piped into a java program like so:
+    // type filename.txt | java program
     public static String readStdIn() {
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
