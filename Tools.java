@@ -46,4 +46,20 @@ public class Tools {
         return output;
     }
 
+    public static char shiftLetter(char c, int offset) {
+        boolean capital = false;
+        if (Character.isUpperCase(c)) {
+            c = Character.toLowerCase(c);
+            capital = true;
+        }
+        int ascii = (int)c - 97;
+        ascii = (ascii + offset + 26) % 26;
+        ascii += 97;
+        c = (char)ascii;
+        if (capital) {
+            c = Character.toUpperCase(c);
+        }
+        return c;
+    }
+
 }

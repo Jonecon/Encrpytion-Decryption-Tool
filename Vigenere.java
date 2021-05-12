@@ -23,40 +23,24 @@ public class Vigenere {
         }
     }
 
-    private static char shiftLetter(char c, int offset) {
-        boolean capital = false;
-        if (Character.isUpperCase(c)) {
-            c = Character.toLowerCase(c);
-            capital = true;
-        }
-        int ascii = (int)c - 97;
-        ascii = (ascii + offset + 26) % 26;
-        ascii += 97;
-        c = (char)ascii;
-        if (capital) {
-            c = Character.toUpperCase(c);
-        }
-        return c;
-    }
-
     public static String removeSpaces(String message) {
         return message.replaceAll("\\s", "");
     }
 
 
     private static String vigenere(String input, String key, boolean decrypt) {
-        String message = "";
+        String output = "";
         char[] keyArray = key.toUpperCase().toCharArray();
         int i = 0;
         for (char c: input.toCharArray()) {
             if (Character.isLetter(c)) {
                 int offset = (int)keyArray[i] - 65;
-                c = shiftLetter(c, decrypt ? -offset : offset);
+                c = Tools.shiftLetter(c, decrypt ? -offset : offset);
                 i = (i + 1) % keyArray.length;
             }
-            message += c;
+            output += c;
         }
-        return message;
+        return output;
     }
 
     public static String encrypt(String input, String key) {
