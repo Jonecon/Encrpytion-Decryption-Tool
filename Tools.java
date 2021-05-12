@@ -46,6 +46,33 @@ public class Tools {
         return output;
     }
 
+    public static String readStdIn() {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            String input = "";
+            String line;
+            while ((line = reader.readLine()) != null) {
+                input += line + '\n';
+            }
+            reader.close();
+            return input;
+        } catch(Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static Hashtable<Character, Integer> letterFrequency(String message) {
+        message = simplifyMessage(message);
+        Hashtable<Character, Integer> dictionary = new Hashtable<Character, Integer>();
+        // count occurences of characters
+        for (char c: message.toCharArray()) {
+            dictionary.put(c, (dictionary.get(c) != null ? dictionary.get(c) : 0) + 1);
+        }
+        return dictionary;
+    }
+
     public static char shiftLetter(char c, int offset) {
         boolean capital = false;
         if (Character.isUpperCase(c)) {

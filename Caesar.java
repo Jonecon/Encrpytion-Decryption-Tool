@@ -1,5 +1,7 @@
 
 import java.io.*;
+import java.util.*;
+import java.util.stream.*;
 
 public class Caesar {
 
@@ -7,14 +9,12 @@ public class Caesar {
         // using main for testing, probably wont need in future
         try {
             int shift = Integer.parseInt(args[0]);
-            System.out.println(shift);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String message = reader.readLine();
-            System.out.println(message);
-            String cipherText = encrypt(message, shift);
+            String input = Tools.readStdIn();
+            String cipherText = encrypt(input, shift);
             System.out.println(cipherText);
-            System.out.println(decrypt(cipherText, shift));
-            reader.close();
+//            System.out.println(decryptWithoutKey(cipherText));
+
+
 
         } catch(Exception e) {
             System.err.println(e.getMessage());
@@ -31,6 +31,21 @@ public class Caesar {
             output += c;
         }
         return output;
+    }
+
+    public static String decryptWithoutKey(String cipherText) {
+        Hashtable<Character, Integer> dictionary = Tools.letterFrequency(cipherText);
+        Map.Entry<Character, Integer> commonLetter = null;
+        for (Map.Entry<Character, Integer> entry : dictionary.entrySet())
+        {
+            if (commonLetter == null || entry.getValue().intValue() > commonLetter.getValue().intValue()) {
+                commonLetter = entry;
+            }
+        }
+        System.out.println(commonLetter.getKey());
+        System.out.println((int)commonLetter.getKey() + " " + (int)'e');
+        int shift = (int)commonLetter.getKey() - 'e';
+        return caesar(cipherText, -shift);
     }
 
     public static String decrypt(String input, int key) {
