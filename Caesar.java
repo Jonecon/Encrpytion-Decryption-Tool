@@ -42,8 +42,6 @@ public class Caesar {
                 commonLetter = entry;
             }
         }
-        System.out.println(commonLetter.getKey());
-        System.out.println((int)commonLetter.getKey() + " " + (int)'e');
         int shift = (int)commonLetter.getKey() - 'e';
         return caesar(cipherText, -shift);
     }

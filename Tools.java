@@ -38,9 +38,12 @@ public class Tools {
             dictionary.put(c, (dictionary.get(c) != null ? dictionary.get(c) : 0) + 1);
         }
         double output = 0;
-        int n = message.length();
-        int devisor = n * (n - 1);
+        long n = message.length();
+        long devisor = n * (n - 1);
         for (Integer count: dictionary.values()) {
+            if (((double)count * (count - 1) / devisor) < 0) {
+                System.err.println(count + " " + devisor);
+            }
             output += (double)count * (count - 1) / devisor;
         }
         return output;

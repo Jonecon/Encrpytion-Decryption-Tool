@@ -7,15 +7,9 @@ public class Vigenere {
         // using main for testing, probably wont need in future
         try {
             String key = args[0];
-            System.out.println(key);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-            String message = reader.readLine();
-            System.out.println(message);
-            System.out.println(Tools.simplifyMessage(message));
-            String cipherText = encrypt(message, key);
+            String input = Tools.readStdIn();
+            String cipherText = encrypt(input, key);
             System.out.println(cipherText);
-            System.out.println(decrypt(cipherText, key));
-            reader.close();
 
         } catch(Exception e) {
             System.err.println(e.getMessage());
