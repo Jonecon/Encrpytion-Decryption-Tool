@@ -3,7 +3,7 @@ import java.io.*;
 public class CryptotronThreeThousand {
 
     public static void main(String[] args) {
-        // args[0] is action(encrypt / decrypt)
+        // args[0] is action(encrypt/decrypt/letterfrequency/indexofcoincidence)
         // args[1] is name of cipher
         // args[2] is the key
         try {
@@ -101,7 +101,7 @@ public class CryptotronThreeThousand {
                             // decrypt with ONLY the cipher, key unknown
                             switch (cipher) {
                                 case "caesar":
-
+                                    System.out.println(Caesar.decryptWithoutKey(inputText));
                                     break;
                                 case "vigenere":
 
