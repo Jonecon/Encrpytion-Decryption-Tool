@@ -7,93 +7,151 @@ public class CryptotronThreeThousand {
         // args[1] is name of cipher
         // args[2] is the key
         try {
+            // if no args provided, show how to use
+            if (args.length == 0) {
+                howToUse();
+                return;
+            }
             // action would be either 'encrypt' or 'decrypt'
             String action = args[0].toLowerCase();
+
             // what cipher to use
-            String cipher = args[1].toLowerCase();
-            String key = args[2];
+            String cipher = null;
             if (action.equals("encrypt")) {
-                switch (cipher) {
-                    case "caesar":
-
-                        break;
-                    case "vigenere":
-
-                        break;
-                    case "simplesubstitution":
-
-                        break;
-                    case "localTransposition":
-
-                        break;
-                    case "playfair":
-
-                        break;
-                    case "fiestel":
-
-                        break;
-                }
-            } else if (action.equals("decrypt")) {
-                // if a cipher is not specified
-                if (cipher == null) {
-                    if (key != null) {
-                        // attempt to decrypt without knowing the cipher, but knowing the key
-
-                    } else {
-                        // attempt to decrypt without knowing anything
-
-                    }
+                if (args.length > 1) {
+                    cipher = args[1].toLowerCase();
                 } else {
-                    if (key != null) {
-                        // decrypt with the cipher AND the key
-                        switch (cipher) {
-                            case "caesar":
+                    System.err.println("ERROR: A cipher must be provided to encrypt the message");
+                    howToUse();
+                    return;
+                }
+            } else {
+                cipher = args.length > 1 ? args[1].toLowerCase() : null;
+            }
 
-                                break;
-                            case "vigenere":
+            // key is stored as a String, if the cipher needs an int, then parse it in your class
+            // key equals NULL if it is not provided in args
+            String key = args.length > 2 ? args[2] : null;
 
-                                break;
-                            case "simplesubstitution":
+            // this is the string that will need to be encrypted/decrypted
+            // it still has punctuation and line breaks etc.
+            String inputText = Tools.readStdIn();
 
-                                break;
-                            case "localTransposition":
+            switch (action) {
+                case "encrypt":
+                    switch (cipher) {
+                        case "caesar":
+                            System.out.println(Caesar.encrypt(inputText, key));
+                            break;
+                        case "vigenere":
 
-                                break;
-                            case "playfair":
+                            break;
+                        case "simplesubstitution":
 
-                                break;
-                            case "fiestel":
+                            break;
+                        case "localtransposition":
 
-                                break;
+                            break;
+                        case "playfair":
+
+                            break;
+                        case "fiestel":
+
+                            break;
+                        default:
+                            unrecognisedCipher();
+                    }
+                    break;
+                case "decrypt":
+                    // if a cipher is not specified
+                    if (cipher == null) {
+                        if (key != null) {
+                            // attempt to decrypt without knowing the cipher, but knowing the key
+
+                        } else {
+                            // attempt to decrypt without knowing anything
+
                         }
                     } else {
-                        // decrypt with ONLY the cipher, key unknown
-                        switch (cipher) {
-                            case "caesar":
+                        if (key != null) {
+                            // decrypt with the cipher AND the key
+                            switch (cipher) {
+                                case "caesar":
+                                    System.out.println(Caesar.decrypt(inputText, key));
+                                    break;
+                                case "vigenere":
 
-                                break;
-                            case "vigenere":
+                                    break;
+                                case "simplesubstitution":
 
-                                break;
-                            case "simplesubstitution":
+                                    break;
+                                case "localtransposition":
 
-                                break;
-                            case "localTransposition":
+                                    break;
+                                case "playfair":
 
-                                break;
-                            case "playfair":
+                                    break;
+                                case "fiestel":
 
-                                break;
-                            case "fiestel":
+                                    break;
+                                default:
+                                    unrecognisedCipher();
+                            }
+                        } else {
+                            // decrypt with ONLY the cipher, key unknown
+                            switch (cipher) {
+                                case "caesar":
 
-                                break;
+                                    break;
+                                case "vigenere":
+
+                                    break;
+                                case "simplesubstitution":
+
+                                    break;
+                                case "localtransposition":
+
+                                    break;
+                                case "playfair":
+
+                                    break;
+                                case "fiestel":
+
+                                    break;
+                                default:
+                                    unrecognisedCipher();
+                            }
                         }
                     }
-                }
+                    break;
+                case "letterfrequency":
+
+                    break;
+                case "indexofcoincidence":
+                    System.out.println(Tools.indexOfCoincidence(inputText));
+                    break;
             }
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private static void unrecognisedCipher() {
+        System.err.println("ERROR: Unrecognised cipher");
+        System.err.println("try one of these:");
+        System.err.println("--caesar");
+        System.err.println("--vigenere");
+        System.err.println("--simplesubstitution");
+        System.err.println("--localtransposition");
+        System.err.println("--playfair");
+        System.err.println("--fiestel");
+    }
+
+    private static void howToUse() {
+        System.err.println("To use Cryptotron3000, use the command:");
+        System.err.println("type(or cat if using linux) filename.txt | java CryptotronThreeThousand action cipher key > destinationfilename.txt");
+        System.err.println("action being one of the following:");
+        System.err.println("encrypt, decrypt, letterfrequency, indexofcoincidence");
     }
 }

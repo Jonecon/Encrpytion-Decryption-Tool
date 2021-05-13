@@ -5,27 +5,6 @@ import java.util.stream.*;
 
 public class Caesar {
 
-    public static void main(String[] args) {
-
-        // example call:
-        // type testfiles/message.txt | java Caesar 10 > outputfile.txt
-        // this takes the contents from message.txt and puts it into outputfile.txt
-        // using main for testing, probably wont need in future
-        try {
-            int shift = Integer.parseInt(args[0]);
-            String input = Tools.readStdIn();
-            String cipherText = encrypt(input, shift);
-            System.out.println(cipherText);
-//            System.out.println(decryptWithoutKey(cipherText));
-
-
-
-        } catch(Exception e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     public static String caesar(String input, int shift) {
         String output = "";
         for (char c: input.toCharArray()) {
@@ -50,10 +29,30 @@ public class Caesar {
         return caesar(cipherText, -shift);
     }
 
-    public static String decrypt(String input, int key) {
-        return caesar(input, -key);
+    public static String decrypt(String input, String key) {
+        int intKey;
+        try {
+            intKey = Integer.parseInt(key);
+        } catch(Exception e) {
+            if (key.length() > 1 || !Character.isLetter(key.toCharArray()[0])) {
+                System.err.println("Caesar cipher requires an integer or a letter as a key.");
+                return null;
+            }
+            intKey = (int)Character.toUpperCase(key.toCharArray()[0]) - 65;
+        }
+        return caesar(input, -intKey);
     }
-    public static String encrypt(String input, int key) {
-        return caesar(input, key);
+    public static String encrypt(String input, String key) {
+        int intKey;
+        try {
+            intKey = Integer.parseInt(key);
+        } catch(Exception e) {
+            if (key.length() > 1 || !Character.isLetter(key.toCharArray()[0])) {
+                System.err.println("Caesar cipher requires an integer or a letter as a key.");
+                return null;
+            }
+            intKey = (int)Character.toUpperCase(key.toCharArray()[0]) - 65;
+        }
+        return caesar(input, intKey);
     }
 }
