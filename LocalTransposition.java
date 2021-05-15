@@ -28,15 +28,16 @@ public class LocalTransposition {
 
 	public static String ltcypher(String msg, int intcycle) {
 
-		// DECLARE VARIABLES
-		String encyptedMsg = "";
-		LinkedList<Integer> cycle = llCycle(intcycle);
-		char msgBlock = new char[][]; 
-
-
-
-
-		return encyptedMsg;
+//		// DECLARE VARIABLES
+//		String encyptedMsg = "";
+//		LinkedList<Integer> cycle = llCycle(intcycle);
+//		char msgBlock = new char[][];
+//
+//
+//
+//
+//		return encyptedMsg;
+		return msg;
 
 	}
 

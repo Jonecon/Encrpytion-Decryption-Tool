@@ -1,4 +1,7 @@
 import java.io.*;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CryptotronThreeThousand {
 
@@ -56,7 +59,7 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "fiestel":
-
+                            System.out.println(Fiestel.encrypt(inputText, key));
                             break;
                         default:
                             unrecognisedCipher();
