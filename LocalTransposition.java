@@ -35,7 +35,6 @@ public class LocalTransposition {
 //
 //
 //
-//
 //		return encyptedMsg;
 		return msg;
 
