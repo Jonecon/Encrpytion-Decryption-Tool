@@ -1,7 +1,7 @@
 public class Fiestel {
 
-    //key is in the form of a hex number, each digit corresponding to one of 16 functions
-    //recommended key length is 16+ digits
+    //key is in the form of a decimal number each digit representing a function (0-9)
+    //recommended key length is 20+ digits
 
     public static String encrypt(String m, String k){
 
@@ -46,7 +46,44 @@ public class Fiestel {
     //calculates the output for the right side
     private static boolean[] stepCalc(boolean[] leftM, boolean[] rightM, int key){
 
-        boolean[] a = func1(rightM);
+        boolean[] a;
+
+        switch(key){
+            case 1:
+                a = func1(rightM);
+                break;
+            case 2:
+                a = func2(rightM);
+                break;
+            case 3:
+                a = func3(rightM);
+                break;
+            case 4:
+                a = func4(rightM);
+                break;
+            case 5:
+                a = func5(rightM);
+                break;
+            case 6:
+                a = func6(rightM);
+                break;
+            case 7:
+                a = func7(rightM);
+                break;
+            case 8:
+                a = func8(rightM);
+                break;
+            case 9:
+                a = func9(rightM);
+                break;
+            case 0:
+                a = func0(rightM);
+                break;
+            default:
+                a = arrayCopy(rightM);
+        }
+
+        //boolean[] a = func1(rightM);
 
         System.out.println("");
 
@@ -66,11 +103,109 @@ public class Fiestel {
         return a;
     }
 
-    //just returns a copy of m at the moment
+    /*
+    A whole bunch of little functions for encryption and decryption
+     */
+
+    //just returns a copy of m, a red herring function (and absolutely not me being too lazy to think of anything else)
     private static boolean[] func1(boolean[] m){
         return arrayCopy(m);
     }
 
+    //shifts all bits over by 1
+    private static boolean[] func2(boolean[] m){
+
+        boolean temp = m[m.length-1];
+        boolean[] a = arrayCopy(m);
+
+        for(int i = m.length-1; i > 0; i--){
+            a[i] = a[i-1];
+        }
+
+        a[0] = temp;
+
+        return a;
+    }
+
+    //swaps every pair of bits (kinda like bubble sort)
+    private static boolean[] func3(boolean[] m){
+
+        boolean[] a = arrayCopy(m);
+        boolean temp;
+
+        for(int i = 0; i < a.length/2; i++){
+            temp = a[2*i];
+            a[2*i] = a[2*i + 1];
+            a[2*i + 1] = temp;
+        }
+
+        return a;
+    }
+
+    //reveres array
+    private static boolean[] func4(boolean[] m){
+
+        boolean[] a = new boolean[m.length];
+
+        for(int i = 0; i < m.length; i++){
+            a[i] = m[m.length - 1 - i];
+        }
+
+        return a;
+    }
+
+    //xor with a reverse copy of itself
+    private static boolean[] func5(boolean[] m){
+
+        boolean[] a = func4(m);
+
+        for(int i = 0; i < m.length; i++){
+            a[i] = a[i] ^ m[i];
+        }
+
+        return a;
+    }
+
+    // and with a bit-shifted copy of itself
+    private static boolean[] func6(boolean[] m){
+        boolean[] a = func2(m);
+
+        for(int i = 0; i < m.length; i++){
+            a[i] = a[i] & m[i];
+        }
+
+        return a;
+    }
+
+    // or with a copy of m with bits bubble swapped
+    private static boolean[] func7(boolean[] m){
+        boolean[] a = func3(m);
+
+        for(int i = 0; i < m.length; i++){
+            a[i] = a[i] | m[i];
+        }
+
+        return a;
+    }
+
+    //for now just calls func1
+    private static boolean[] func8(boolean[] m){
+        return func1(m);
+    }
+
+    //for now just calls func2
+    private static boolean[] func9(boolean[] m){
+        return func2(m);
+    }
+
+    //for now just calls func3
+    private static boolean[] func0(boolean[] m){
+        return func3(m);
+    }
+
+    /*
+    End of little functions
+     */
 
     /*
     IMPORTANT NOTE: removes new line from end of string
@@ -217,7 +352,16 @@ public class Fiestel {
         return BitArrayToString(messageBits);
     }
 
-    private void writeToFile(){
+    //generates a random key 16 hex digits long
+    public int genRandomKey(){
 
+        int key = (int)(Math.random() * 10);
+
+        for(int i = 0; i < 20; i++){
+            key *= 10;
+            key += (int)(Math.random() * 10);
+        }
+
+        return key;
     }
 }
