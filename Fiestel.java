@@ -13,10 +13,10 @@ public class Fiestel {
         boolean[] leftM = new boolean[messageBits.length/2];
         boolean[] rightM = new boolean[messageBits.length/2];
 
-//        for(int i = 0; i < messageBits.length/2; i++){
-//            leftM[i] = messageBits[i];
-//            rightM[i] = messageBits[i + messageBits.length/2];
-//        }
+        for(int i = 0; i < messageBits.length/2; i++){
+            leftM[i] = messageBits[i];
+            rightM[i] = messageBits[i + messageBits.length/2];
+        }
 
         int[] keySchedule = new int[k.length()];
 
@@ -29,16 +29,16 @@ public class Fiestel {
 
         boolean[] temp;
 
-//        for(int i = 0; i < keySchedule.length; i++){
-//            temp = arrayCopy(rightM);
-//            rightM = stepCalc(leftM, rightM, keySchedule[i]);
-//            leftM = temp;
-//        }
+        for(int i = 0; i < keySchedule.length; i++){
+            temp = arrayCopy(rightM);
+            rightM = stepCalc(leftM, rightM, keySchedule[i]); //this line here is causing the trouble
+            leftM = temp;
+        }
 
-//        for(int i = 0; i < messageBits.length/2; i++){
-//            messageBits[i] = rightM[i];
-//            messageBits[i + messageBits.length/2] = leftM[i];
-//        }
+        for(int i = 0; i < messageBits.length/2; i++){
+            messageBits[i] = rightM[i];
+            messageBits[i + messageBits.length/2] = leftM[i];
+        }
 
         return BitArrayToString(messageBits);
     }
@@ -47,8 +47,21 @@ public class Fiestel {
     private static boolean[] stepCalc(boolean[] leftM, boolean[] rightM, int key){
 
         boolean[] a = func1(rightM);
+
+        System.out.println("");
+
         for(int i = 0; i < rightM.length; i++){ //xor with func(rightM) and leftM
             a[i] = leftM[i] ^ a[i];
+
+            if(i % 8 == 0){
+                System.out.println("");
+            }
+            if(a[i]){
+                System.out.print("1");
+            }
+            else{
+                System.out.print("0");
+            }
         }
         return a;
     }
@@ -102,10 +115,10 @@ public class Fiestel {
                 System.out.println("");
             }
             if(StringBits[i]){
-                System.out.print("0");
+                System.out.print("1");
             }
             else{
-                System.out.print("1");
+                System.out.print("0");
             }
         }
 
