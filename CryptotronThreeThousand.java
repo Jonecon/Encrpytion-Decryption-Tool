@@ -95,7 +95,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "fiestel":
-
+                                    System.out.println(Fiestel.decrypt(inputText, key));
                                     break;
                                 default:
                                     unrecognisedCipher();
