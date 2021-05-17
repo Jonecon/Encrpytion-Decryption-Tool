@@ -1,5 +1,6 @@
 
 import java.io.*;
+import java.util.*;
 
 public class Vigenere {
 
@@ -47,7 +48,43 @@ public class Vigenere {
 
 
     // method to (try to) decode without a key
-    // public static String decode(String cipherText) {
-    //     return cipherText;
-    // }
+    public static String findKey(String cipherText) {
+        String SimplifiedCipherText = Tools.simplifyMessage(cipherText);
+        int n = 1;
+        double ioc = 0;
+        for (int keyLength = 1; keyLength < 10; keyLength++) {
+            double _ioc = Tools.indexOfCoincidence(getEveryNthLetter(SimplifiedCipherText, keyLength, 0));
+            if (_ioc > ioc) {
+                ioc = _ioc;
+                n = keyLength;
+            }
+        }
+
+        String key = "";
+        for (int i = 0; i < n; i++) {
+            double chisquare = 999999;
+            char shift = 'a';
+            String s =  getEveryNthLetter(SimplifiedCipherText, n, i);
+            for (int letter = 0; letter < 26; letter++) {
+                double _chisquare = Tools.chiSquare(Caesar.decrypt(s, letter));
+                if (_chisquare < chisquare) {
+                    chisquare = _chisquare;
+                    shift = (char)(letter + 65);
+                }
+            }
+            key += shift;
+        }
+        return decrypt(cipherText, key);
+    }
+
+    private static String getEveryNthLetter(String input, int n, int startIndex) {
+        String output = "";
+        int i = startIndex;
+        char[] charArray = input.toCharArray();
+        while (i < charArray.length) {
+            output += charArray[i];
+            i += n;
+        }
+        return output;
+    }
 }
