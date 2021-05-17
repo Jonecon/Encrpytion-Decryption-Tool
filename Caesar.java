@@ -17,16 +17,17 @@ public class Caesar {
     }
 
     public static String decryptWithoutKey(String cipherText) {
-        Hashtable<Character, Integer> dictionary = Tools.letterFrequency(cipherText);
-        Map.Entry<Character, Integer> commonLetter = null;
-        for (Map.Entry<Character, Integer> entry : dictionary.entrySet())
-        {
-            if (commonLetter == null || entry.getValue().intValue() > commonLetter.getValue().intValue()) {
-                commonLetter = entry;
+        String output = cipherText;
+        double chiSquare = 9999999;
+        for (int letter = 0; letter < 26; letter++) {
+            String decryption = Caesar.decrypt(cipherText, letter);
+            double _chiSquare = Tools.chiSquare(decryption);
+            if (_chiSquare < chiSquare) {
+                chiSquare = _chiSquare;
+                output = decryption;
             }
         }
-        int shift = (int)commonLetter.getKey() - 'e';
-        return caesar(cipherText, -shift);
+        return output;
     }
 
     public static String decrypt(String input, String key) {
