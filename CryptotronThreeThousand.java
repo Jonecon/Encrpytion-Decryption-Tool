@@ -47,7 +47,7 @@ public class CryptotronThreeThousand {
                             System.out.println(Caesar.encrypt(inputText, key));
                             break;
                         case "vigenere":
-
+                            System.out.println(Vigenere.encrypt(inputText, key));
                             break;
                         case "simplesubstitution":
 
@@ -83,7 +83,7 @@ public class CryptotronThreeThousand {
                                     System.out.println(Caesar.decrypt(inputText, key));
                                     break;
                                 case "vigenere":
-
+                                    System.out.println(Vigenere.decrypt(inputText, key));
                                     break;
                                 case "simplesubstitution":
 
@@ -107,7 +107,7 @@ public class CryptotronThreeThousand {
                                     System.out.println(Caesar.decryptWithoutKey(inputText));
                                     break;
                                 case "vigenere":
-
+                                    System.out.println(Vigenere.findKey(inputText));
                                     break;
                                 case "simplesubstitution":
 

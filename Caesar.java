@@ -55,4 +55,10 @@ public class Caesar {
         }
         return caesar(input, intKey);
     }
+    public static String decrypt(String input, int key) {
+        return caesar(input, -key);
+    }
+    public static String encrypt(String input, int key) {
+        return caesar(input, key);
+    }
 }
