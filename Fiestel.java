@@ -52,50 +52,13 @@ public class Fiestel {
         return BitArrayToString(messageBits);
     }
 
-    /*
-    Basically an exact copy of encrypt with some minor changes
-    Honestly this cipher is kind of nuts how encryption/decryption work together
-     */
     public static String decrypt(String m, String k){
-        //convert message into bits
-        boolean[] messageBits = StringToBitArray(m);
-
-        //convert to left and right arrays
-        boolean[] leftM = new boolean[messageBits.length/2];
-        boolean[] rightM = new boolean[messageBits.length/2];
-
-        for(int i = 0; i < messageBits.length/2; i++){
-            rightM[i] = messageBits[i];
-            leftM[i] = messageBits[i + messageBits.length/2];
+        String inverseKey = "";
+        for(int i = 0; i < k.length(); i++){
+            inverseKey += k.substring(k.length()-1-i,k.length()-i);
         }
-
-        //getting key schedule from key
-        int[] keySchedule = new int[k.length()];
-
-        try{
-            //parsing key String
-            for(int i = 0; i < keySchedule.length; i++){
-                keySchedule[i] = Integer.parseInt(k.substring(i,i+1));
-            }
-        }
-        catch(Exception e){ //bad key scenario
-            return "Please enter the key for the Fiestel cipher as a decimal number \n Key entered:" + k;
-        }
-
-        boolean[] temp;
-
-        for(int i = 0; i < keySchedule.length; i++){
-            temp = arrayCopy(leftM);
-            leftM = stepCalc(rightM, leftM, keySchedule[keySchedule.length-1-i]);
-            rightM = temp;
-        }
-
-        for(int i = 0; i < messageBits.length/2; i++){
-            messageBits[i] = leftM[i];
-            messageBits[i + messageBits.length/2] = rightM[i];
-        }
-
-        return BitArrayToString(messageBits);
+        System.out.println(inverseKey);
+        return encrypt(m,inverseKey);
     }
 
     //calculates the output for the right side
