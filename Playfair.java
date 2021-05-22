@@ -3,6 +3,10 @@ import java.lang.StringBuilder;
 
 public class Playfair{
 	
+	private static final String PLACEHOLDER = "X";
+	private static final String MISSING_LETTER = "J";
+	private static final String REPLACEMENT_LETTER = "I";
+	
 	public static void main(String[] args){
 		
 		if(args.length != 2){
@@ -19,21 +23,26 @@ public class Playfair{
 	}
 	
 	public static String encrypt(String message, String key){
-		PlayfairTable table = new PlayfairTable(key);
-		table.print();
+		PlayfairTable table = new PlayfairTable(prepareString(key));
+		table.print();		
 		
-		message = message.toUpperCase().replaceAll("[^A-Z]","");
+		message = prepareString(message);
 		StringBuilder cypherText = new StringBuilder();
 		
 		for(int i = 0; i < message.length(); i+=2){
 			
-			String pair = i+2 < message.length() ? message.substring(i, i+2) : message.charAt(i) + "X";
+			String pair = i+1 < message.length() ? message.substring(i, i+2) : message.charAt(i) + PLACEHOLDER;
 			System.err.println("Message pair: " + pair);
 			String cypherPair = table.getCypherPair(pair);
 			System.err.println("Cypher pair: " + cypherPair);
 			cypherText.append(cypherPair);
 		}
 		return cypherText.toString();
+	}
+	
+	private static String prepareString(String orig){
+		String prepared = orig.toUpperCase().replaceAll("[^A-Z]","");
+		return prepared.replaceAll(MISSING_LETTER, REPLACEMENT_LETTER);
 	}
 	
 	public static String decrypt(String cypher, String key){
@@ -46,23 +55,19 @@ public class Playfair{
 
 class PlayfairTable{
 	
-	private static final int MAX_SIZE = 25;
-	private static final String MISSING_LETTER = "J";
-	
-	private int currentSize = 0;
-	private String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //missing J because need 25
+	private static final int MAX_SIZE = 25;	
+	private static final String ALPHABET = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
+		
+	private int currentSize = 0;	
 	private ArrayList<Character> table = new ArrayList<Character>();
 	
 	public PlayfairTable(String keyword){
 		addCharacters(keyword);
-		addCharacters(alphabet);
+		addCharacters(ALPHABET);
 	}
 	
 	
-	private void addCharacters(String keyword){		
-		keyword = keyword.toUpperCase().replaceAll("[^A-Z]","");		
-		keyword = keyword.replace(MISSING_LETTER, "");
-		
+	private void addCharacters(String keyword){				
 		for(int i =0; i < keyword.length(); i++){
 			if(currentSize == MAX_SIZE)break;			
 			
