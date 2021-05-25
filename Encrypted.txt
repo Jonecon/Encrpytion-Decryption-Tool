@@ -1,0 +1,9 @@
+Size is: 5
+
+Cycle is: true
+
+1
+2
+3
+4
+5
