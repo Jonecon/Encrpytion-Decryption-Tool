@@ -59,7 +59,10 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "fiestel":
-                            System.out.println(Fiestel.encrypt(inputText, key));
+                            String s = Fiestel.encrypt(inputText, key); //I just have encrypt + decrypt here rn for ease of testing
+                            System.out.println("String s: " + s);
+                            System.out.println(Fiestel.decrypt(s, key));
+                            //System.out.println(Fiestel.encrypt(inputText, key));
                             break;
                         default:
                             unrecognisedCipher();

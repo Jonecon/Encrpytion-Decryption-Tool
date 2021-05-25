@@ -213,11 +213,10 @@ public class Fiestel {
 
     /*
     converts a string into a boolean array containing all the chars as ascii binary
-    IMPORTANT NOTE: removes new line from end of string
      */
     private static boolean[] StringToBitArray(String m){
 
-        m = m.substring(0,m.length()-1); //removing new line char
+        //m = m.substring(0,m.length()-1); //removing new line char
 
         int arrayIndex = 0; //index for counting where in the bit array we are
         boolean[] StringBits = new boolean[m.length() * 8]; //all the bits
@@ -324,6 +323,17 @@ public class Fiestel {
                 System.out.print("0");
             }
         }
+    }
+
+    //gens a random key and feeds it into
+    public String encrypt(String m){
+
+        String key = "" + genRandomKey();
+
+        System.out.println("Key: " + key);
+
+        return encrypt(m,key);
+
     }
 
 }
