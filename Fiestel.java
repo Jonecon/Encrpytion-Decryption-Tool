@@ -146,7 +146,7 @@ public class Fiestel {
         return a;
     }
 
-    //reveres array
+    //reverses array
     private static boolean[] func4(boolean[] m){
 
         boolean[] a = new boolean[m.length];
@@ -192,19 +192,78 @@ public class Fiestel {
         return a;
     }
 
-    //for now just calls func1
+    // picks the lowest prime which does not divide the length of m and scale shifts over bits by that amount
+    // (i.e. 0 => 0p mod m, 1 => 1p mod p, 2 => 2p mod 2, etc)
     private static boolean[] func8(boolean[] m){
-        return func1(m);
+
+        int prime = 3; //not gonna be less than 3
+
+        while(m.length % prime == 0){
+            prime++;
+        }
+
+        boolean[] a = arrayCopy(m);
+
+        for(int i = 0; i < m.length; i++){
+            int n = (i * prime) % m.length;
+            a[n] = m[i];
+        }
+
+        return a;
     }
 
-    //for now just calls func2
+    // shift one copy of m over by one then add them
     private static boolean[] func9(boolean[] m){
+
+        boolean a[] = new boolean[m.length];
+
+        boolean carry = false;
+        int j = 1;
+
+        for(int i = 0; i < m.length; i++){
+
+            if(j <= m.length){ //more efficient than calcing mod all the time
+                j = 0;
+            }
+
+            if(m[i] && m[j] && carry){ //1+1+1
+                a[i] = true;
+                //carry = true
+            }
+            else if((m[i] && m[j]) || (m[i] && carry) || (m[j] && carry)){ //1+1+0
+                a[i] = false;
+                carry = true;
+            }
+            else if(!m[i] && !m[j] && !carry){ //0+0+0
+                a[i] = false;
+                //carry = false
+            }
+            else{ //1+0+0, annoying to write out the if statement for it so I stuck it here
+                a[i] = true;
+                carry = false;
+            }
+
+            j++;
+        }
+
         return func2(m);
     }
 
-    //for now just calls func3
+    //just flips the bits
+    //yeah I've really run out of ideas at this point that aren't annoyingly complicated
     private static boolean[] func0(boolean[] m){
-        return func3(m);
+        boolean[] a = arrayCopy(m);
+
+        for(boolean b : a){
+            if(b){
+                b = false;
+            }
+            else{
+                b = true;
+            }
+        }
+
+        return m;
     }
 
     /*
