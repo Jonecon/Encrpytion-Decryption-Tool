@@ -14,11 +14,11 @@ public class LocalTransposition {
 
 			String strCycle = args[0];
 
-			ArrayList<Integer> cycle = piCycle(strCycle);
-			System.out.println("\nSize is: " + cycle.size());
-			System.out.println("Cycle is: " + checkCycle(cycle) + "\n");
-
-			cycle.forEach((cycleNum) -> System.out.println(cycleNum));
+			// FOR DEBUGGING
+			// ArrayList<Integer> cycle = piCycle(strCycle);
+			// System.out.println("\nSize is: " + cycle.size());
+			// System.out.println("Cycle is: " + checkCycle(cycle) + "\n");
+			// cycle.forEach((cycleNum) -> System.out.println(cycleNum));
 
 			String encryptMsg = encrypt(Tools.readStdIn(), strCycle);
 
@@ -33,12 +33,48 @@ public class LocalTransposition {
 
 		// DECLARE VARIABLES
 		String encyptedMsg = "";
+		ArrayList<String> blockMessages = new ArrayList<String>();
+		ArrayList<String> tempBlock = new ArrayList<String>();
+		ArrayList<String> copy = new ArrayList<String>();
+		ArrayList<ArrayList<String>> eachBlock = new ArrayList<ArrayList<String>>();
 		ArrayList<Integer> cycle = piCycle(intcycle);
-		String[] blockString = msg.split("(?<=\\G.{"+ cycle.size() +"})");
+		String[] blockLetters = {};
 
-		System.out.println("\n");
-		for (String block : blockString) {
-			System.out.println(block);
+		// SEPARATE THE MESSAGE INTO BLOCK SIZE OF THE CYCLE LEN
+		String[] blocks = msg.split("(?<=\\G.{"+ cycle.size() +"})");
+		Collections.addAll(blockMessages, blocks);
+
+		// MAKE EACH BLOCK AN ARRAYLIST AND PUT INTO AN ARRAYLIST
+		for (String block : blockMessages) {
+
+			// SPLIT THE BLOCK THEN CONVERT INTO ARRAYLIST
+			blockLetters = block.split("");
+			Collections.addAll(tempBlock, block.split(""));
+			copy = copyArrayList(tempBlock);
+
+			// ADD THIS ARRAYLIST TO THE MAIN ARRAYLIST
+			eachBlock.add(copy);
+			tempBlock.clear();
+		}
+
+		int blockIndex = 0;
+
+		System.out.println("BlockString:\n");
+		for (String block : blockMessages ) {
+			System.out.println(blockIndex + " " + block);
+			blockIndex++;
+		}
+
+		blockIndex = 0;
+		System.out.println("\nEachBlock:\n");
+		for (ArrayList<String> block : eachBlock) {
+			
+			System.out.print(blockIndex + " ");
+			for (String letter : block) {
+				System.out.print(letter + " ");
+			}
+			System.out.print("\n");
+			blockIndex++;
 		}
 
 		return encyptedMsg;
@@ -107,6 +143,19 @@ public class LocalTransposition {
 		catch (NumberFormatException e) { return false; }
 
 		return true;
+	}
+
+	// RETURNS A COPY OF AN ARRAYLIST SO THAT IT DOES NOT CLEAR AS WELL WITH THE ORIGINAL
+	static ArrayList<String> copyArrayList(ArrayList<String> al) {
+
+		// CREATE A NEW ARRAYLIST
+		ArrayList<String> copy = new ArrayList<String>();
+
+		for (String letter : al) {
+			copy.add(letter);
+		}
+
+		return copy;
 	}
 
 	static void errorMsg(String type) {
