@@ -1,12 +1,10 @@
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SimpleSubstitution {
-    private static final Map<Character,Character> substitutionMap = new HashMap<>();
+    public static final Map<Character,Character> substitutionMap = new HashMap<>();
     public static void main(String[] args)
     {
         try
@@ -36,72 +34,45 @@ public class SimpleSubstitution {
 
     public static void Setup()
     {
-        //Set up map
-        //Encryption
-        substitutionMap.put('a','Q');
-        substitutionMap.put('b','W');
-        substitutionMap.put('c','E');
-        substitutionMap.put('d','R');
-        substitutionMap.put('e','T');
-        substitutionMap.put('f','Y');
-        substitutionMap.put('g','U');
-        substitutionMap.put('h','I');
-        substitutionMap.put('i','O');
-        substitutionMap.put('j','P');
-        substitutionMap.put('k','A');
-        substitutionMap.put('l','S');
-        substitutionMap.put('m','D');
-        substitutionMap.put('n','F');
-        substitutionMap.put('o','G');
-        substitutionMap.put('p','H');
-        substitutionMap.put('q','J');
-        substitutionMap.put('r','K');
-        substitutionMap.put('s','L');
-        substitutionMap.put('t','Z');
-        substitutionMap.put('u','X');
-        substitutionMap.put('v','C');
-        substitutionMap.put('w','V');
-        substitutionMap.put('x','B');
-        substitutionMap.put('y','N');
-        substitutionMap.put('z','M');
-        //Decryption
-        substitutionMap.put('Q','a');
-        substitutionMap.put('W','b');
-        substitutionMap.put('E','c');
-        substitutionMap.put('R','d');
-        substitutionMap.put('T','e');
-        substitutionMap.put('Y','f');
-        substitutionMap.put('U','g');
-        substitutionMap.put('I','h');
-        substitutionMap.put('O','i');
-        substitutionMap.put('P','j');
-        substitutionMap.put('A','k');
-        substitutionMap.put('S','l');
-        substitutionMap.put('D','m');
-        substitutionMap.put('F','n');
-        substitutionMap.put('G','o');
-        substitutionMap.put('H','p');
-        substitutionMap.put('J','q');
-        substitutionMap.put('K','r');
-        substitutionMap.put('L','s');
-        substitutionMap.put('Z','t');
-        substitutionMap.put('X','u');
-        substitutionMap.put('C','v');
-        substitutionMap.put('V','w');
-        substitutionMap.put('B','x');
-        substitutionMap.put('N','y');
-        substitutionMap.put('M','z');
+        //Set up alphabet
+        List<Character> alphabetS = new LinkedList<>();
+        List<Character> alphabetC = new LinkedList<>();
+        for(int i = 0; i < 26; i++)
+        {
+            alphabetS.add((char)(97 + i));
+            alphabetC.add((char)(65 + i));
+        }
+
+        //Encryption and Decryption
+        for(int i = 0; i < 26; i++)
+        {
+            int size = alphabetC.size(); //The size is the multiplier for the random
+            int random = (int)(Math.random()*size); //The random number
+            char a = alphabetS.get(i);
+            char b = alphabetC.get(random);
+            substitutionMap.put(a,b); //Put the keys on the map
+            substitutionMap.put(b,a);
+            alphabetC.remove(random); //Remove the element to stop random from getting the same letter
+        }
     }
 
     public static String Substitution(String text)
     {
-        Setup(); //Set up
+        //Make sure the map is empty otherwise Decryption wouldn't be possible
+        if(substitutionMap.isEmpty())
+        {
+            Setup(); //Set up
+        }
         String output;
         char[] charArray = new char[text.length()]; //Set up charArray
         int i = 0;
         for(char c: text.toCharArray())
         {
-            charArray[i] = substitutionMap.get(c); //Get the value
+            //Ensure the key is in the map to prevent null pointer exceptions
+            if(substitutionMap.containsKey(c))
+            {
+                charArray[i] = substitutionMap.get(c); //Get the value
+            }
             i++;
         }
         output = String.valueOf(charArray); //Turn charArray into String
