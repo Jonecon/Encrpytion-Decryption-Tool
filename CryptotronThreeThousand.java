@@ -53,16 +53,20 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "localtransposition":
-
+                            System.out.println(localTrans(inputText, key, "encrypt"));
                             break;
                         case "playfair":
 
                             break;
                         case "fiestel":
-                            String s = Fiestel.encrypt(inputText, key); //I just have encrypt + decrypt here rn for ease of testing
+                            // I just have encrypt + decrypt here rn for ease of testing
+                            String s = Fiestel.encrypt(inputText, key);
                             System.out.println("String s: " + s);
                             System.out.println(Fiestel.decrypt(s, key));
-                            //System.out.println(Fiestel.encrypt(inputText, key));
+                            // System.out.println(Fiestel.encrypt(inputText, key));
+                            break;
+                        case "rsa":
+
                             break;
                         default:
                             unrecognisedCipher();
@@ -92,13 +96,16 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "localtransposition":
-
+                                    System.out.println(localTrans(inputText, key, "decrypt"));
                                     break;
                                 case "playfair":
 
                                     break;
                                 case "fiestel":
                                     System.out.println(Fiestel.decrypt(inputText, key));
+                                    break;
+                                case "rsa":
+
                                     break;
                                 default:
                                     unrecognisedCipher();
@@ -152,6 +159,7 @@ public class CryptotronThreeThousand {
         System.err.println("--localtransposition");
         System.err.println("--playfair");
         System.err.println("--fiestel");
+        System.err.println("--rsa");
     }
 
     private static void howToUse() {

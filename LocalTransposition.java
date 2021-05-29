@@ -8,13 +8,9 @@ public class LocalTransposition {
 	public static void main(String[] args) {
 		try {
 
-			if (args.length == 0) {
-				errorMsg("NoCycle");
-			}
-
-			String strCycle = args[0];
-			// String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
-			String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "decrypt");
+			String strCycle = args.length = 1 ? args[0] : null;
+			String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
+			String decryptMsg = localTrans(encryptMsg, strCycle, "decrypt");
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -272,10 +268,10 @@ public class LocalTransposition {
 
 		switch (type) {
 			case "ErrorCycle":
-				System.out.println("There's an error in your cycle.");
+				System.out.println("There's an error in your key cycle.");
 				break;
 			case "NoCycle":
-				System.out.println("Enter a valid cycle.");
+				System.out.println("Enter a valid key cycle.");
 				break;
 		}
 
