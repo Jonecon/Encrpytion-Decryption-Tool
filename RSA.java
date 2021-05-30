@@ -8,13 +8,17 @@ public class RSA {
         try {
         	if (args.length == 2){
         		if (args[0].contains("-t")){
-        			String message = "t";
-	        		String keys = generateKey(32);
+        			String message = args[1];
+	        		String keys = generateKey(1024);
 	            	String[] parts = keys.split(";");
-	           	 	String publicKey = "27756768072734402834091752684548002341515313684541231730375463129226702955993773195423563147385686679836905393210192315834279479600785518875524335868708881490870018380735246442562293960088453105749148291607765353732864085524334314860798227020143255156312165827986525091461024270071663366370132151298404670669285540149280350250047416913764790582920606034077868714156535219718311247744592725428905184889664585462090210602986256756112925513953807497490863278034996623207375752633245561412727181726973702550955297519594484668325059124882590061698300839959908707763455435379954388873305802067162836349135157836061827766229,65537";
-	            	String privateKey = "27756768072734402834091752684548002341515313684541231730375463129226702955993773195423563147385686679836905393210192315834279479600785518875524335868708881490870018380735246442562293960088453105749148291607765353732864085524334314860798227020143255156312165827986525091461024270071663366370132151298404670669285540149280350250047416913764790582920606034077868714156535219718311247744592725428905184889664585462090210602986256756112925513953807497490863278034996623207375752633245561412727181726973702550955297519594484668325059124882590061698300839959908707763455435379954388873305802067162836349135157836061827766229,19836790610230270313568753841130579453889447900313680372241566849010346618702112625754206435053533225865101208504902230751028395960480207326745705770522268068234417976082163321944705467272882159909255207501608341437449916439618021959125479636578568469050962218066204979000564471021659476184107901954062278714644953869822405114940432156101775643518612480052239051009336904914510143196291548792706737304579692612719920611214222104821127806763726753444972379687222593204865263108212561641533070978766482190301709325125470442743777966055642077865669330583719739963108669003750269029739967967099938153225423807951419353249";
+	           	 	String publicKey = parts[0];
+	            	String privateKey = parts[1];
 
 	        		byte[] encryptedMessage = encrypt(message.getBytes(), publicKey);
+
+	        		if (encryptedMessage == null)
+	        			return;
+
 	            	byte[] decryptedMessage = decrypt(encryptedMessage, privateKey);
 
 	            	System.out.println("Original Message: " + message);
@@ -76,7 +80,20 @@ public class RSA {
         }
     }
 
-    public static byte[] encrypt(byte[] message, String key){
+
+    //Overloaded encrypt method to deal with not being given a key.
+    public static byte[] encrypt(byte[] message){
+    	//Generate a key
+    	String key = generateKey(1024);
+    	
+    	printKey(key);
+
+    	//Encrypt message with this generated key
+    	return encrypt(message, key);
+    }
+
+    //Overloaded encrypt method to encrypt a message with a given key
+    public static byte[] encrypt(byte[] message, String key){ 
     	//Message
     	BigInteger bIMessage = new BigInteger(message);
 
@@ -84,6 +101,12 @@ public class RSA {
     	String[] keyParts = key.split(",");
     	BigInteger e = new BigInteger(keyParts[1]);
     	BigInteger n = new BigInteger(keyParts[0]);
+
+    	//Check to see if the message is too big.
+    	if ((message.length * 8) > n.bitLength()){
+    		System.err.println("Your message is too big, with a size of: " + (message.length * 8) + ", maximum size: " + (n.bitLength() - 1));
+    		return null;
+    	}	
 
     	//Encrypting.
         return bIMessage.modPow(e,n).toByteArray();
@@ -142,5 +165,23 @@ public class RSA {
         String publicKey = n + "," + e;
         String privateKey = n + "," + d;
         return publicKey + ";" + privateKey;
+    }
+
+    public static void printKey(String key){
+    	//Split public and private key
+    	String[] keyParts = key.split(";");
+
+    	//Get components
+    	String[] publicKeyParts = keyParts[0].split(",");
+    	String[] privateKeyParts = keyParts[1].split(",");
+
+    	BigInteger e = new BigInteger(publicKeyParts[1]);
+    	BigInteger d = new BigInteger(privateKeyParts[1]);
+    	BigInteger n = new BigInteger(privateKeyParts[0]);
+
+
+    	System.out.println("e: " + e + "\n");
+    	System.out.println("d: " + d + "\n");
+    	System.out.println("N: " + n);
     }
 }
