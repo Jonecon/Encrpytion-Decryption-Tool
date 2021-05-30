@@ -62,6 +62,43 @@ public class Tools {
 		return null;
 	}
 
+	public static byte[] readStdInBytes(){
+		try{
+			ArrayList<Byte> message = new ArrayList<Byte>();
+        	BufferedInputStream byteStream = new BufferedInputStream(System.in);
+        	int b;
+        	while ((b = byteStream.read()) != -1){
+        		message.add((byte)b);
+        	}
+            byteStream.close();
+
+            //Convert list into byte array for encrypt/decrypt methods.
+           	byte[] messageBytes = new byte[message.size()];
+           	for (int i = 0; i < message.size(); i++){
+           		messageBytes[i] = message.get(i).byteValue();
+           	}
+
+           	return messageBytes;
+		}
+		catch(Exception ex){
+			System.err.println("Cannot read the bytes from std in: " + ex.getMessage());
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void outputBytes(byte[] output) {
+		try{
+			BufferedOutputStream outputStream = new BufferedOutputStream(System.out);
+			outputStream.write(output);
+           	outputStream.close();
+		}
+		catch(Exception ex){
+			System.err.println("Cannot output the bytes to std out: " + ex.getMessage());
+			ex.printStackTrace();
+		}
+	}
+
 	public static char shiftLetter(char c, int offset) {
 
 		boolean capital = false;

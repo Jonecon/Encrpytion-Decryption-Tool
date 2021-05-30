@@ -9,6 +9,7 @@ public class CryptotronThreeThousand {
         // args[0] is action(encrypt/decrypt/letterfrequency/indexofcoincidence)
         // args[1] is name of cipher
         // args[2] is the key
+        // args[3] RSA key part 2
         try {
             // if no args provided, show how to use
             if (args.length == 0) {
@@ -38,7 +39,16 @@ public class CryptotronThreeThousand {
 
             // this is the string that will need to be encrypted/decrypted
             // it still has punctuation and line breaks etc.
-            String inputText = Tools.readStdIn();
+            String inputText = "";
+            byte[] byteInputText = null;
+            
+            if (!cipher.equals("rsa") || action.equals("encrypt"))
+                inputText = Tools.readStdIn();
+            else 
+                byteInputText = Tools.readStdInBytes();
+            
+
+
 
             switch (action) {
                 case "encrypt":
@@ -53,7 +63,7 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "localtransposition":
-                            System.out.println(localTrans(inputText, key, "encrypt"));
+                            //System.out.println(localTrans(inputText, key, "encrypt"));
                             break;
                         case "playfair":
 
@@ -66,7 +76,14 @@ public class CryptotronThreeThousand {
                             // System.out.println(Fiestel.encrypt(inputText, key));
                             break;
                         case "rsa":
-
+                            if (args[3] == null){
+                                System.err.println("Incorrect key supplied");
+                                break;
+                            }
+                            //My key is in the form N e/d so I would need 2 args for this.
+                            String RSAKey = RSA.formatKey(key, args[3]);
+                            byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey);
+                            Tools.outputBytes(encrpytedMessage);
                             break;
                         default:
                             unrecognisedCipher();
@@ -96,7 +113,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "localtransposition":
-                                    System.out.println(localTrans(inputText, key, "decrypt"));
+                                    //System.out.println(localTrans(inputText, key, "decrypt"));
                                     break;
                                 case "playfair":
 
@@ -105,7 +122,13 @@ public class CryptotronThreeThousand {
                                     System.out.println(Fiestel.decrypt(inputText, key));
                                     break;
                                 case "rsa":
-
+                                    if (args[3] == null){
+                                        System.err.println("Incorrect key supplied");
+                                        break;
+                                    }
+                                    //My key is in the form N e/d so I would need 2 args for this.
+                                    String RSAKey = RSA.formatKey(key, args[3]);
+                                    System.out.println(new String(RSA.decrypt(byteInputText, RSAKey)));
                                     break;
                                 default:
                                     unrecognisedCipher();

@@ -27,6 +27,14 @@ public class RSA {
 		            System.out.println("Decrypted String: " + new String(decryptedMessage)); 
 		            return;
         		}else if (args[0].contains("-g")){
+        			String key = generateKey(Integer.parseInt(args[1]));
+        			String[] keyParts = key.split(";");
+        			String[] publicKeyParts = keyParts[0].split(",");
+        			String[] privateKeyParts = keyParts[1].split(",");
+
+        			System.out.println("N: " + publicKeyParts[0]);
+        			System.out.println("e: " + publicKeyParts[1]);
+        			System.out.println("d: " + privateKeyParts[1]);
         			System.out.println(generateKey(Integer.parseInt(args[1])));
         			return;
         		}else{
@@ -158,13 +166,17 @@ public class RSA {
         }
         //If this d cannot be found, generate another random key.
         catch(Exception ex){
-        	System.out.println("Re attempting generation of key.");
+        	//System.out.println("Re attempting generation of key.");
         	return generateKey(p.bitLength());
         }
 
-        String publicKey = n + "," + e;
-        String privateKey = n + "," + d;
+        String publicKey = formatKey(n.toString(), e.toString());
+        String privateKey = formatKey(n.toString(), d.toString());
         return publicKey + ";" + privateKey;
+    }
+
+    public static String formatKey(String n, String eOrD){
+    	return n + "," + eOrD;
     }
 
     public static void printKey(String key){
