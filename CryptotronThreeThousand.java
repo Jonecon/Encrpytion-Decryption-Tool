@@ -47,9 +47,6 @@ public class CryptotronThreeThousand {
             else 
                 byteInputText = Tools.readStdInBytes();
             
-
-
-
             switch (action) {
                 case "encrypt":
                     switch (cipher) {
@@ -63,7 +60,7 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "localtransposition":
-                            //System.out.println(localTrans(inputText, key, "encrypt"));
+                            System.out.println(LocalTransposition.transposition(inputText, key, "encrypt"));
                             break;
                         case "playfair":
 
@@ -113,7 +110,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "localtransposition":
-                                    //System.out.println(localTrans(inputText, key, "decrypt"));
+                                    System.out.println(LocalTransposition.transposition(inputText, key, "decrypt"));
                                     break;
                                 case "playfair":
 

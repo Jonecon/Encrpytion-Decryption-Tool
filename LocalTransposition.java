@@ -12,9 +12,11 @@ public class LocalTransposition {
 	public static void main(String[] args) {
 		try {
 
-			String strCycle = (args.length == 1) ? args[0] : null;
-			String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
-			String decryptMsg = localTrans(encryptMsg, strCycle, "decrypt");
+			// String strCycle = (args.length == 1) ? args[0] : null;
+			// String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
+			// String decryptMsg = localTrans(encryptMsg, strCycle, "decrypt");
+
+			String decryptMsgWithNoKey = decryptWithNoKey(Tools.readStdIn());
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -23,7 +25,7 @@ public class LocalTransposition {
 	}
 
 	/**** ENCRYPT/DECRYPT (ACCORDING TO THE METHOD PROVIDED) THE MSG USING LOCAL TRANSPOSITION ****/
-	public static String localTrans(String msg, String intcycle, String method) {
+	public static String transposition(String msg, String intcycle, String method) {
 
 		/**** DECLARE VARIABLES ****/
 		// FOR THE ENCRYPTED MSG
@@ -122,42 +124,67 @@ public class LocalTransposition {
 
 		/* DEBUGGING */
 
-		System.out.println("\n"+ method +"ed text:\n");
-		System.out.println(encyptedMsg);
+		// System.out.println("\n"+ method +"ed text:\n");
+		// System.out.println(encyptedMsg);
 
-		int blockIndex = 0;
+		// int blockIndex = 0;
 
-		System.out.println("\nEncrypted Text in Block:\n");
-		ArrayList<String> encryptedMsgDebug = new ArrayList<String>();
-		String[] encryptedDebug = encyptedMsg.split("(?<=\\G.{"+ cycle.size() +"})");
-		Collections.addAll(encryptedMsgDebug, encryptedDebug);
-		for (String block : encryptedMsgDebug ) {
-			System.out.println(blockIndex + " " + block);
-			blockIndex++;
-		}
+		// System.out.println("\nEncrypted Text in Block:\n");
+		// ArrayList<String> encryptedMsgDebug = new ArrayList<String>();
+		// String[] encryptedDebug = encyptedMsg.split("(?<=\\G.{"+ cycle.size() +"})");
+		// Collections.addAll(encryptedMsgDebug, encryptedDebug);
+		// for (String block : encryptedMsgDebug ) {
+		// 	System.out.println(blockIndex + " " + block);
+		// 	blockIndex++;
+		// }
 
 
-		blockIndex = 0;
-		System.out.println("\nBlockString:\n");
-		for (String block : blockMessages ) {
-			System.out.println(blockIndex + " " + block);
-			blockIndex++;
-		}
+		// blockIndex = 0;
+		// System.out.println("\nBlockString:\n");
+		// for (String block : blockMessages ) {
+		// 	System.out.println(blockIndex + " " + block);
+		// 	blockIndex++;
+		// }
 
-		blockIndex = 0;
-		System.out.println("\nEachBlock:\n");
-		for (ArrayList<String> block : eachBlock) {
+		// blockIndex = 0;
+		// System.out.println("\nEachBlock:\n");
+		// for (ArrayList<String> block : eachBlock) {
 			
-			System.out.print(blockIndex + " ");
-			for (String letter : block) {
-				System.out.print(letter + " ");
-			}
-			System.out.print("\n");
-			blockIndex++;
-		}
+		// 	System.out.print(blockIndex + " ");
+		// 	for (String letter : block) {
+		// 		System.out.print(letter + " ");
+		// 	}
+		// 	System.out.print("\n");
+		// 	blockIndex++;
+		// }
 
 		return encyptedMsg;
 	}
+
+	public static String decryptWithNoKey(String msg) {
+
+		/**** REMOVE THE LAST NEWLINE ON .TXT ****/
+		if (msg.substring(msg.length()-1).equals("\n")) {
+			msg = msg.substring(0, msg.length()-1);	
+		}
+
+		/**** DECLARE VARIABLES ****/
+		String copy = msg;
+		int lenofmsg = msg.length();
+		ArrayList<Integer> possibleLenValue = getPossiblePiCycleLen(lenofmsg);
+
+
+
+
+		/* DEBUGGING */
+		System.out.println("msg to decrypt: " + msg);
+		System.out.println("msg length: " + lenofmsg);
+		System.out.println("length sqrt: " + (int)Math.sqrt(lenofmsg));
+		System.out.println("possible length: " + possibleLenValue);
+
+		return copy;
+
+	} 
 
 	/**** CONVERT THE STRING CYCLE PROVIDED INTO AN ARRAYLIST PiCYCLE ****/
 	static ArrayList<Integer> piCycle(String intcycle) {
@@ -253,11 +280,11 @@ public class LocalTransposition {
 			al.add(i);
 		}
 
-		System.out.println("min: " + min);
-		System.out.println("max: " + max);
-		System.out.println("msglen: " + msglen + "\n");
+		// System.out.println("min: " + min);
+		// System.out.println("max: " + max);
+		// System.out.println("msglen: " + msglen + "\n");
 
-		System.out.println("Original: " + al + "\n");
+		// System.out.println("Original: " + al + "\n");
 
 		/**** SHUFFLE ARRAYLIST ****/
 		// WHILE THERE ARE STILL ELEMENTS TO SHUFFLE
@@ -273,9 +300,44 @@ public class LocalTransposition {
 			al.set(randIndex, temp);
 		}
 
-		System.out.println("Shuffled: " + al  + "\n");
+		// System.out.println("Shuffled: " + al  + "\n");
 
 		return al;
+	}
+
+	/**** RETURNS ALL POSSIBLE CYCLE LEN ****/
+	static ArrayList<Integer> getPossiblePiCycleLen(int lenNumber) {
+
+		/**** DECLARE VARIABLES ****/
+		ArrayList<Integer> possibleLenValue = new ArrayList<Integer>();
+		int smallVal = 0;
+		int bigVal = 0;
+
+		/**** TO AVOID ITERATING ON A ALREADY FOUND FACTOR AGAIN ****/
+		int sqrLen = (int)Math.sqrt(lenNumber);
+
+		/**** CHECK IF IT A FACTOR ****/
+		for (int number = 1; number <= sqrLen; number++) {
+			
+			// IF ITS A FACTOR - DOES NOT HAVE REMAINDER
+			if ((lenNumber % number) == 0) {
+
+				// GET BOTH VALUE(FACTOR)
+				smallVal = number;
+				bigVal = lenNumber/number;
+
+				/**** ADD TO THE ARRAYLIST IF ITS NOT ADDED YET ****/
+				possibleLenValue.add(smallVal);
+				
+				if (!possibleLenValue.contains(bigVal)) {
+					possibleLenValue.add(bigVal);
+				}
+			}
+		}
+
+		Collections.sort(possibleLenValue);
+
+		return possibleLenValue;
 	}
 
 	/**** CHECK IF THE CYCLE IS VALID (EVERY NUMBER IS PRESENT) ****/
@@ -347,14 +409,11 @@ public class LocalTransposition {
 	/**** PRINTS ERROR MESSAGES ACCORDING TO TYPE PROVIDED ****/
 	static void errorMsg(String type) {
 
-		System.out.println("\n");
+		// System.out.println("\n");
 
 		switch (type) {
 			case "ErrorCycle":
 				System.out.println("There's an error in your key cycle.");
-				break;
-			case "NoCycle":
-				System.out.println("Enter a valid key cycle.");
 				break;
 			case "noMsg":
 				System.out.println("Enter a valid text to encrypt/decrypt.");
