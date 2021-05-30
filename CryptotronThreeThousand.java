@@ -51,6 +51,10 @@ public class CryptotronThreeThousand {
                 case "encrypt":
                     switch (cipher) {
                         case "caesar":
+                            if (key == null) {
+                                key = String.valueOf(Caesar.randomKey());
+                                System.err.println("KEY: " + key);
+                            }
                             System.out.println(Caesar.encrypt(inputText, key));
                             break;
                         case "vigenere":

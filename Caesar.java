@@ -62,4 +62,9 @@ public class Caesar {
     public static String encrypt(String input, int key) {
         return caesar(input, key);
     }
+
+    public static int randomKey() {
+        Random r = new Random();
+        return r.nextInt(24) + 1;// cannot be 0, would not change the text at all
+    }
 }
