@@ -58,6 +58,10 @@ public class CryptotronThreeThousand {
                             System.out.println(Caesar.encrypt(inputText, key));
                             break;
                         case "vigenere":
+                            if (key == null) {
+                                key = Vigenere.randomKey(5, 10);
+                                System.err.println("KEY: " + key);
+                            }
                             System.out.println(Vigenere.encrypt(inputText, key));
                             break;
                         case "simplesubstitution":

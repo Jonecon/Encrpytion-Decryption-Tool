@@ -87,4 +87,15 @@ public class Vigenere {
         }
         return output;
     }
+
+    public static String randomKey(int minLength, int maxLength) {
+        Random r = new Random();
+        int length = r.nextInt(maxLength - minLength) + minLength;
+        String key = "";
+        for (int i = 0; i < length; i++) {
+            int letter = r.nextInt(25);
+            key += (char)(letter + 65);
+        }
+        return key;
+    }
 }
