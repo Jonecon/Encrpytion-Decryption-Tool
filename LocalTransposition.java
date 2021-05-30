@@ -1,14 +1,18 @@
 import java.io.*;
 import java.util.*;
+import java.lang.*;  
 
 public class LocalTransposition {
+
+	/**** DECLARE GLOBAL VARIABLE ****/
+	private static int msglen;
 	
 	// EXAMPLE CALL:
 	// type testfiles/message.txt | java LocalTrans cycle > outputfile.txt
 	public static void main(String[] args) {
 		try {
 
-			String strCycle = args.length = 1 ? args[0] : null;
+			String strCycle = (args.length == 1) ? args[0] : null;
 			String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
 			String decryptMsg = localTrans(encryptMsg, strCycle, "decrypt");
 
@@ -27,6 +31,7 @@ public class LocalTransposition {
 		StringBuilder encrypted = new StringBuilder();
 
 		// FOR THE CYCLE
+		msglen = msg.length();
 		ArrayList<Integer> cycle = new ArrayList<Integer>();
 
 		// IF THE CYCLE IS FOR ENCRYPTION
@@ -50,7 +55,10 @@ public class LocalTransposition {
 		int moveToWhere = 0;
 
 		/**** SEPARATE THE MESSAGE INTO BLOCK SIZE OF THE CYCLE LEN ****/
-		msg = msg.substring(0, msg.length()-1);
+		// REMOVE THE LAST NEWLINE ON .TXT
+		if (msg.substring(msg.length()-1).equals("\n")) {
+			msg = msg.substring(0, msg.length()-1);	
+		}
 		String[] blocks = msg.split("(?<=\\G.{"+ cycle.size() +"})");
 		Collections.addAll(blockMessages, blocks);
 
@@ -114,7 +122,7 @@ public class LocalTransposition {
 
 		/* DEBUGGING */
 
-		System.out.println("Encrypted text:\n");
+		System.out.println("\n"+ method +"ed text:\n");
 		System.out.println(encyptedMsg);
 
 		int blockIndex = 0;
@@ -157,21 +165,29 @@ public class LocalTransposition {
 		/**** DECLARE VARIABLES ****/
 		ArrayList<Integer> cycle = new ArrayList<Integer>();
 
-		/**** ADD EACH NUMBER PROVIDED TO THE ARRAYLIST ****/
-		// FOR EVERY STRING PROVIDED
-		for (String number : intcycle.split(",")) {
+		/**** IF KEY HAS BEEN PROVIDED****/
+		if (intcycle != null) {
 
-			// ADD TO ARRAYLIST IF THE STRING PROVIDED IS NUMERIC
-			if (isNumeric(number)) {
-				cycle.add(Integer.parseInt(number));
-			} else {
-				errorMsg("ErrorCycle");
+			/**** ADD EACH NUMBER PROVIDED TO THE ARRAYLIST ****/
+			// FOR EVERY STRING PROVIDED
+			for (String number : intcycle.split(",")) {
+
+				// ADD TO ARRAYLIST IF THE STRING PROVIDED IS NUMERIC
+				if (isNumeric(number)) {
+					cycle.add(Integer.parseInt(number));
+				} else {
+					errorMsg("ErrorCycle");
+				}
 			}
-		}
 
-		/**** THEN CHECK IF THE CYCLE ARRAYLIST IS VALID ****/
-		if (checkCycle(cycle) == false) {
-			errorMsg("ErrorCycle");
+			/**** THEN CHECK IF THE CYCLE ARRAYLIST IS VALID ****/
+			if (checkCycle(cycle) == false) {
+				errorMsg("ErrorCycle");
+			}	
+		}
+		/**** IF KEY IS NOT PROVIDED ****/
+		else {
+			cycle = getRandPiCycle();
 		}
 
 		return cycle;
@@ -181,18 +197,85 @@ public class LocalTransposition {
 	static ArrayList<Integer> inversePiCycle(String intcycle) {
 
 		/**** DECLARE VARIABLES ****/
-		ArrayList<Integer> picycle = piCycle(intcycle);
-		ArrayList<Integer> inversecycle = copyArrayListInt(picycle);
-		int moveToWhere = 0;
+		ArrayList<Integer> picycle = new ArrayList<Integer>();
+		ArrayList<Integer> inversecycle = new ArrayList<Integer>();
 
-		/**** INVERESE THE CYCLE ****/
-		for (int i = 0; i < picycle.size() ; i++) {
-			
-			moveToWhere = (picycle.size() - 1) - i;
-			inversecycle.set(moveToWhere, picycle.get(i));
+		/**** IF KEY HAS BEEN PROVIDED****/
+		if (intcycle != null) {
+
+			picycle = piCycle(intcycle);
+			inversecycle = copyArrayListInt(picycle);
+			int moveToWhere = 0;
+
+			/**** INVERESE THE CYCLE ****/
+			for (int i = 0; i < picycle.size() ; i++) {
+				
+				moveToWhere = (picycle.size() - 1) - i;
+				inversecycle.set(moveToWhere, picycle.get(i));
+			}
+		}
+		/**** IF KEY IS NOT PROVIDED ****/
+		else {
+			errorMsg("noKeyDecrypt");
 		}
 
 		return inversecycle;
+	}
+
+	/**** RETURNS A RANDOM PiCYCLE ACCORDING TO THE MSG'S LEN ****/
+	static ArrayList<Integer> getRandPiCycle() {
+
+		if (msglen == 0) {
+			errorMsg("noMsg");
+		}
+
+		/**** DECLARE VARIABLES ****/
+		// FOR CREATING PiCYCLE
+		ArrayList<Integer> al = new ArrayList<Integer>();
+		int min = 7;
+		int max = (int)(msglen - (msglen*.1));
+		int cycleLen = min;
+
+		// FOR SHUFFLING
+		int currIndex = 0;
+		int temp = 0;
+		int randIndex = 0;
+
+		/**** GETTING A RANDOM PiCYCLE LENGTH***/
+		// IF MSG LEN IS 7 OR HIGHER
+		if (msglen > min) {
+			// GET RANDOM LEN FROM MIN TO MAX
+			cycleLen = (int)(Math.random()*(max-min+1)+min);
+		}
+
+		/**** CREATE A CYCLE ****/
+		for (int i = 0; i < cycleLen; i++) {
+			al.add(i);
+		}
+
+		System.out.println("min: " + min);
+		System.out.println("max: " + max);
+		System.out.println("msglen: " + msglen + "\n");
+
+		System.out.println("Original: " + al + "\n");
+
+		/**** SHUFFLE ARRAYLIST ****/
+		// WHILE THERE ARE STILL ELEMENTS TO SHUFFLE
+		currIndex = al.size();
+		while(currIndex != 0) {
+			// PICK A REMAINING ELEMENT
+			randIndex = (int)(Math.random() * currIndex);
+			currIndex -= 1;
+
+			// SWAP THE VALUE
+			temp = al.get(currIndex);
+			al.set(currIndex, al.get(randIndex));
+			al.set(randIndex, temp);
+		}
+
+		System.out.println("Shuffled: " + al  + "\n");
+
+		return al;
 	}
 
 	/**** CHECK IF THE CYCLE IS VALID (EVERY NUMBER IS PRESENT) ****/
@@ -273,12 +356,16 @@ public class LocalTransposition {
 			case "NoCycle":
 				System.out.println("Enter a valid key cycle.");
 				break;
+			case "noMsg":
+				System.out.println("Enter a valid text to encrypt/decrypt.");
+			case "noKeyDecrypt":
+				System.out.println("Enter a valid key to decrypt.");
 		}
 
-		// MIGHT NOT NEED
-		System.out.println("You can type");
-		System.out.println("java LocalTransposition < msg.txt 0,1,2,3,4");
-		System.out.println("\n");
+		// // MIGHT NOT NEED
+		// System.out.println("You can type");
+		// System.out.println("java LocalTransposition < msg.txt 0,1,2,3,4");
+		// System.out.println("\n");
 
 		System.exit(0);
 	}
