@@ -65,7 +65,11 @@ public class CryptotronThreeThousand {
                             System.out.println(Vigenere.encrypt(inputText, key));
                             break;
                         case "simplesubstitution":
-
+                            if (key == null) {
+                                key = SimpleSubstitution.randomKey();
+                                System.err.println("KEY: " + key);
+                            }
+                            System.out.println(SimpleSubstitution.encrypt(inputText, key));
                             break;
                         case "localtransposition":
                             System.out.println(LocalTransposition.transposition(inputText, key, "encrypt"));
@@ -115,7 +119,7 @@ public class CryptotronThreeThousand {
                                     System.out.println(Vigenere.decrypt(inputText, key));
                                     break;
                                 case "simplesubstitution":
-
+                                    System.out.println(SimpleSubstitution.decrypt(inputText, key));
                                     break;
                                 case "localtransposition":
                                     System.out.println(LocalTransposition.transposition(inputText, key, "decrypt"));
