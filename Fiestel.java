@@ -1,3 +1,6 @@
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class Fiestel {
 
     //key is in the form of a decimal number each digit representing a function (0-9)
@@ -10,6 +13,7 @@ public class Fiestel {
 
         //convert message into bits
         boolean[] messageBits = StringToBitArray(m);
+        //boolean[] messageBits = BytesToBitArray(bytes);
 
         //convert to left and right arrays
         //could do a slightly more efficient thing here but it's not really super relevant atm
@@ -30,7 +34,8 @@ public class Fiestel {
             }
         }
         catch(Exception e){ //bad key scenario
-            return "Please enter the key for the Fiestel cipher as a decimal number \n Key entered:" + k;
+            //return "Please enter the key for the Fiestel cipher as a decimal number \n Key entered:" + k;
+            return null;
         }
 
         boolean[] temp;
@@ -49,6 +54,7 @@ public class Fiestel {
             messageBits[i + messageBits.length/2] = leftM[i];
         }
 
+        //return BitArrayToString(messageBits);
         return BitArrayToString(messageBits);
     }
 
@@ -57,7 +63,7 @@ public class Fiestel {
         for(int i = 0; i < k.length(); i++){
             inverseKey += k.substring(k.length()-1-i,k.length()-i);
         }
-        System.out.println(inverseKey);
+        System.out.println("Inverse Key: " + inverseKey);
         return encrypt(m,inverseKey);
     }
 
@@ -348,24 +354,55 @@ public class Fiestel {
     }
 
     //generates a random key 20 digits long
-    public int genRandomKey(){
+    public static String genRandomKey(){
 
-        int key = (int)(Math.random() * 10);
+        String key = "" + (int)(Math.random() * 10);
 
-        for(int i = 0; i < 20; i++){
-            key *= 10;
+        for(int i = 0; i < 10; i++){
             key += (int)(Math.random() * 10);
         }
 
-        return key;
+        return "" + key;
     }
 
     /*
-    This method attempts to figure out the key for a given message string 'm'
-    I haven't got a clue where to start on this
+    Really basic brute forcing method
+    As far as I can tell there really isn't way to be able to find the key any other way
+    This method is here mostly for completeness and very small keys/text
      */
-    public static String smartDecrypt(String m, String k){
-        return "";
+    public static String smartDecrypt(String m){
+
+        int count = 0;
+        String key = "";
+        String out = "";
+
+        while(count < 100){
+
+            key = "" + count;
+            out = decrypt(m,key);
+
+            //simple check of first 50 letters to see if they fit standard text characters. If not break loop early and continue
+            for(int i = 0; i < 50; i++){
+                if(!(out.charAt(i) >= 'A' && out.charAt(i) <= 'Z')){ //check if it's a capital letter
+                    if(!(out.charAt(i) >= 'a' && out.charAt(i) <= 'z')){ //check if it's a lowercase letter
+                        if(out.charAt(i) == ' ' || out.charAt(i) == '?' || out.charAt(i) == '!' || out.charAt(i) == '.'){
+                            //do nothing and continue on
+                        }
+                        else{
+                            break; //not a char
+                        }
+                    }
+                }
+
+                if(i == 49){ //if it got to here then it's text, YAY!
+                    return out;
+                }
+            }
+
+            count++;
+        }
+
+        return "Could not find the key in a reasonable amount of time.";
     }
 
     //used for de-bugging
@@ -385,14 +422,33 @@ public class Fiestel {
     }
 
     //gens a random key and feeds it into
-    public String encrypt(String m){
-
+    public static String encrypt(String m){
         String key = "" + genRandomKey();
-
         System.out.println("Key: " + key);
-
         return encrypt(m,key);
+    }
 
+    //takes String s and writes to a text file
+    public static void writeToFile(String s){
+        try {
+            FileWriter myWriter = new FileWriter("decrypt.txt");
+            myWriter.write(s);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+        }
+    }
+
+    public static byte[] encrypt(byte[] bytes, String k){
+        String s = new String(bytes);
+        String m = encrypt(s,k);
+        return m.getBytes();
+    }
+
+    public static byte[] decrypt(byte[] bytes, String k){
+        String s = new String(bytes);
+        String m = decrypt(s,k);
+        return m.getBytes();
     }
 
 }

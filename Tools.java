@@ -3,7 +3,6 @@ import java.util.*;
 
 public class Tools {
 
-
 	public static void main(String[] args) {
 		try {
 

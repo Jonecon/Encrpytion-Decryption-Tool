@@ -78,11 +78,20 @@ public class CryptotronThreeThousand {
 
                             break;
                         case "fiestel":
+                            if(key == null){
+                                key = Fiestel.genRandomKey();
+                                System.out.println("Your key is: " + key);
+                            }
                             // I just have encrypt + decrypt here rn for ease of testing
                             String s = Fiestel.encrypt(inputText, key);
-                            System.out.println("String s: " + s);
-                            System.out.println(Fiestel.decrypt(s, key));
-                            // System.out.println(Fiestel.encrypt(inputText, key));
+                            //byte[] encryptedMessage = s.getBytes();
+                            //byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
+                            //Tools.outputBytes(encryptedMessage);
+                            //System.out.println("String s: " + s);
+                            System.out.println(s);
+
+                            System.out.println(Fiestel.decrypt(s,key));
+
                             break;
                         case "rsa":
                             if (args[3] == null){
@@ -128,7 +137,10 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "fiestel":
-                                    System.out.println(Fiestel.decrypt(inputText, key));
+                                    //System.out.println(new String(Fiestel.decrypt(byteInputText, key)));
+                                    String s = new String(byteInputText);
+                                    String m = Fiestel.decrypt(s,key);
+                                    System.out.println(m);
                                     break;
                                 case "rsa":
                                     if (args[3] == null){
@@ -161,7 +173,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "fiestel":
-
+                                    //System.out.println(Fiestel.smartDecrypt(inputText));
                                     break;
                                 default:
                                     unrecognisedCipher();
