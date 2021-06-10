@@ -47,7 +47,7 @@ public class CryptotronThreeThousand {
                 //System.out.println(new String(byteInputText));
             } else {
                 inputText = Tools.readStdIn();
-            } 
+            }
 
             switch (action) {
                 case "encrypt":
@@ -85,22 +85,37 @@ public class CryptotronThreeThousand {
                             break;
                         case "fiestel":
                             if(key == null){
-                                key = Fiestel.genRandomKey();
+                                key = Fiestel.genRandomKey(20);
                                 System.out.println("Your key is: " + key);
                             }
-                            // I just have encrypt + decrypt here rn for ease of testing
+
+                            /*
+                            Fiestel cypher is encrypting and decrypting in-program for the most part since something weird happens to the ascii when it's fed back in through system.in or when it's put into a word file
+                            Decryption from an encrypted text file mostly works but strangely random ascii characters are flipped
+                            It's definitely not something wrong with the encryption/decryption since doing both successively in-program works just fine.
+                             */
+
                             String s = Fiestel.encrypt(inputText, key);
 
-                            System.out.println("Input Length:  " + inputText.length());
-                            System.out.println("Output Length: " + s.length());
+                            System.out.print(s);
+                            Fiestel.writeToFile(s, "encryptedText.txt");
+                            Fiestel.writeToFile(Fiestel.decrypt(s,key), "decryptedText.txt");
 
-                            System.out.println(s);
                             System.out.println(Fiestel.decrypt(s,key));
 
-                            byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
-                            Fiestel.writeToFile(encryptedMessage);
+                            //byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
 
+                            //System.out.println("Input Length:  " + inputText.length());
+                            //System.out.println("Output Length: " + s.length());
+
+                            //System.out.print(inputText);
+                            //System.out.print(Fiestel.cleanMessage(inputText));
+
+                            //byteInputText = Tools.readStdInBytes();
+                            //byte[] encryptedMessage = Fiestel.encrypt(byteInputText, key);
+                            //Fiestel.writeToFile(encryptedMessage);
                             //Tools.outputBytes(encryptedMessage);
+
                             break;
                         case "rsa":
                             if (args[3] == null || args[3].contains("n") || args[3].contains("b") || args[3].equals("1") || args[3].equals("0")){
@@ -152,18 +167,17 @@ public class CryptotronThreeThousand {
                                     System.out.println(Playfair.decrypt(inputText, key));
                                     break;
                                 case "fiestel":
+
                                     //System.out.println(new String(Fiestel.decrypt(byteInputText, key)));
                                     //String s = new String(byteInputText);
+                                    //String fixedText = inputText.substring(0,inputText.length());
+                                    //System.out.println(fixedText);
 
-                                    String fixedText = inputText.substring(0,inputText.length() - 1);
+                                    String m = Fiestel.decrypt(inputText,key);
+                                    System.out.print(m);
 
-                                    System.out.println(fixedText);
-
-                                    String m = Fiestel.decrypt(fixedText,key);
-                                    System.out.println(m);
-
-                                    System.out.println("Input Length:  " + fixedText.length());
-                                    System.out.println("Output Length: " + m.length());
+                                    //System.out.println("Input Length:  " + inputText.length());
+                                    //System.out.println("Output Length: " + m.length());
 
                                     break;
                                 case "rsa":
@@ -221,7 +235,18 @@ public class CryptotronThreeThousand {
 									//System.out.println(Playfair.decrypt(inputText));
                                     break;
                                 case "fiestel":
-                                    //System.out.println(Fiestel.smartDecrypt(inputText));
+
+                                    //need to
+
+                                    //key length of about 6 is ok for basically trying to brute force finding the key
+                                    if(key == null){
+                                        key = Fiestel.genRandomKey(6);
+                                        System.out.println("Your key is: " + key);
+                                    }
+                                    String s = Fiestel.encrypt(Fiestel.cleanMessage(inputText), key);
+                                    System.out.print(s);
+                                    System.out.println("smart decrypt: ");
+                                    System.out.println(Fiestel.smartDecrypt(s));
                                     break;
                                 default:
                                     unrecognisedCipher();
