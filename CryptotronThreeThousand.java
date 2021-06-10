@@ -40,11 +40,18 @@ public class CryptotronThreeThousand {
             String inputText = "";
             byte[] byteInputText = null;
 
-            if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
+            /*if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
                 byteInputText = Tools.readStdInBytes();
+                //System.out.println(new String(byteInputText));
             } else {
                 inputText = Tools.readStdIn();
-            }
+            } */
+
+            if (!cipher.equals("rsa") || action.equals("encrypt"))
+                inputText = Tools.readStdIn();
+            else 
+                byteInputText = Tools.readStdInBytes();
+
 
             switch (action) {
                 case "encrypt":
@@ -98,7 +105,7 @@ public class CryptotronThreeThousand {
                                 break;
                             }
                             //My key is in the form N e/d so I would need 2 args for this.
-                            String RSAKey = RSA.formatKey(key, args[3]);
+                            String RSAKey = key + "," + args[3];
                             byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey);
                             Tools.outputBytes(encrpytedMessage);
                             break;
@@ -142,12 +149,13 @@ public class CryptotronThreeThousand {
                                     System.out.println(m);
                                     break;
                                 case "rsa":
+                                    //System.out.println("Inside RSA");
                                     if (args[3] == null){
                                         System.err.println("Incorrect key supplied");
                                         break;
                                     }
                                     //My key is in the form N e/d so I would need 2 args for this.
-                                    String RSAKey = RSA.formatKey(key, args[3]);
+                                    String RSAKey = key + "," + args[3];
                                     System.out.println(new String(RSA.decrypt(byteInputText, RSAKey)));
                                     break;
                                 default:

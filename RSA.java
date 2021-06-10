@@ -21,7 +21,7 @@ public class RSA {
 			return formatKey(_n.toString(), _d.toString());
 		}
 
-		private String formatKey(String n, String eOrD){
+		public String formatKey(String n, String eOrD){
     		return n + "," + eOrD;
     	}
 
@@ -73,6 +73,7 @@ public class RSA {
         		System.err.println("Usage: java RSA <e/d> <key pair \"N,e/d\">");
         		return;
         	}
+
         	//Setup key
         	String key = args[1] + "," + args[2];
 
