@@ -36,6 +36,7 @@ public class RSA {
     public static void main(String[] args) {
         try {
         	if (args.length == 2){
+        		//Helper methods for testing.
         		if (args[0].contains("-t")){
         			String message = args[1];
 	        		Key keys = generateKey(1024);
@@ -145,10 +146,11 @@ public class RSA {
     public static byte[] encrypt(byte[] message, String key, boolean isByte){
     	BigInteger bIMessage = BigInteger.ONE;
     	if (isByte){
-			//Message
+			//Message as bytes
 	    	bIMessage = new BigInteger(message);
     	}
     	else{
+    		//Message as a number
     		String messageString = new String(message);
     		long messageValue = Long.parseLong(messageString);
     		bIMessage = BigInteger.valueOf(messageValue);
@@ -169,6 +171,7 @@ public class RSA {
         return bIMessage.modPow(e,n).toByteArray();
     }
 
+    //Decrypts a text through it's public key by brute forcing it's private key.
     public static byte[] decrypt(byte[] message, String key, boolean isByte, boolean isPublicKey){
     	if (!isPublicKey)
     		decrypt(message, key, isByte);
@@ -178,6 +181,8 @@ public class RSA {
     	BigInteger n = new BigInteger(parts[0]);
     	BigInteger p = new BigInteger("3");
     	BigInteger e = new BigInteger(parts[1]);
+
+    	//Brute force the private key.
     	while (p.compareTo(n) != 0){
     		if (n.mod(p).equals(BigInteger.ZERO))
     			break;
@@ -185,14 +190,16 @@ public class RSA {
     		p = p.add(BigInteger.ONE);
     	}
 
+    	//After finding a factor we now have both p and q.
     	BigInteger q = n.divide(p);
 
+    	//Find phi of n so we can word out the inverse of e.
     	BigInteger phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)); 
     	BigInteger d = e.modInverse(phiN);
+
+    	//Return key.
     	String privateKey = n.toString() + "," + d.toString();
-
     	System.out.println("Full Key: " + "\ne: " + e.toString() + "\nd: " + d.toString() + "\nN: " + n.toString());
-
     	return decrypt(message, privateKey, isByte);
     }
 
@@ -203,6 +210,7 @@ public class RSA {
 	    	bIMessage = new BigInteger(message);
     	}
     	else{
+    		//Formatted as a number.
     		String messageString = new String(message);
     		long messageValue = Long.parseLong(messageString);
     		bIMessage = BigInteger.valueOf(messageValue);
