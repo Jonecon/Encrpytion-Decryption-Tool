@@ -15,32 +15,6 @@ public class Playfair{
 	
 	private static Random rand = new Random();
 	
-	//will remove main method soon
-	/*public static void main(String[] args){
-		
-		if(args.length != 3){
-			System.err.println("Invalid input: Expected parameters: <-(e/d), keyword, message>");
-			return;
-		}
-		if(args[0].compareTo("-d") != 0 && args[0].compareTo("-e") != 0){
-			System.err.println("Invalid input: -d for decrypted. -e for encrypted");
-			return;
-		}
-		
-		boolean encrypt = args[0].compareTo("-d") != 0;
-		String keyword = args[1];
-		String message = args[2];
-		
-		if(encrypt){
-			String cypherText = encrypt(message, keyword);
-			System.err.println("Cypher text: "+ cypherText);	
-		}
-		else{
-			String text = decrypt(message, keyword);
-			System.err.println("Message: "+ text);	
-		}
-	}*/
-	
 	private static QuadgramStats loadTrainingProbabilities(String training) throws IOException
 	{
 		BufferedReader reader = new BufferedReader(new FileReader(training));
@@ -100,7 +74,7 @@ public class Playfair{
 					}
 					else if(i - lastChanged > 100)break;
 				}
-				System.err.println("Round " + t + "\tBest Key: " + pKey + "\tScore: " + pScore);
+				//System.err.println("Round " + t + "\tBest Key: " + pKey + "\tScore: " + pScore);
 				
 				if(pScore > bestScore){
 					bestKey = pKey;
@@ -109,7 +83,7 @@ public class Playfair{
 				
 			}		
 			
-			System.err.println("Best Key: " + bestKey + "\tScore: " + bestScore);
+			//System.err.println("Best Key: " + bestKey + "\tScore: " + bestScore);
 			return decrypt(cypher, bestKey);
 		}
 		catch(Exception ex){

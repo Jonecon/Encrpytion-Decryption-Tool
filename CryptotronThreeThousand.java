@@ -77,6 +77,10 @@ public class CryptotronThreeThousand {
                             System.out.println(LocalTransposition.transposition(inputText, key, "encrypt"));
                             break;
                         case "playfair":
+							if(key == null){
+								key = Playfair.randomKey();
+								System.err.println("KEY: " + key);
+							}
                             System.out.println(Playfair.encrypt(inputText, key));
                             break;
                         case "fiestel":
@@ -214,7 +218,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "playfair":
-
+									//System.out.println(Playfair.decrypt(inputText));
                                     break;
                                 case "fiestel":
                                     //System.out.println(Fiestel.smartDecrypt(inputText));
