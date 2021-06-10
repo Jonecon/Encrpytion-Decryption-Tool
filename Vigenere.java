@@ -74,6 +74,7 @@ public class Vigenere {
             }
             key += shift;
         }
+        System.out.println("KEY: " + key);
         return decrypt(cipherText, key);
     }
 

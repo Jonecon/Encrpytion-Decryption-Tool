@@ -21,7 +21,7 @@ public class RSA {
 			return formatKey(_n.toString(), _d.toString());
 		}
 
-		private String formatKey(String n, String eOrD){
+		public String formatKey(String n, String eOrD){
     		return n + "," + eOrD;
     	}
 
@@ -36,18 +36,19 @@ public class RSA {
     public static void main(String[] args) {
         try {
         	if (args.length == 2){
+        		//Helper methods for testing.
         		if (args[0].contains("-t")){
         			String message = args[1];
 	        		Key keys = generateKey(1024);
 	           	 	String publicKey = keys.getPublicKey();
 	            	String privateKey = keys.getPrivateKey();
 
-	        		byte[] encryptedMessage = encrypt(message.getBytes(), publicKey);
+	        		byte[] encryptedMessage = encrypt(message.getBytes(), publicKey, false);
 
 	        		if (encryptedMessage == null)
 	        			return;
 
-	            	byte[] decryptedMessage = decrypt(encryptedMessage, privateKey);
+	            	byte[] decryptedMessage = decrypt(encryptedMessage, privateKey, true);
 
 	            	System.out.println("Original Message: " + message);
 		           	System.out.println("Encrypted Message: ");
@@ -59,22 +60,28 @@ public class RSA {
         			key.printKey();
         			return;
         		}else{
-        			System.err.println("Usage: java RSA <e/d> <key N> <key e/d>");
+        			error();
         			return;
         		}
         	}
 
         	//Error checking.
-        	if (args.length != 3){
-        		System.err.println("Usage: java RSA <e/d> <key N> <key e/d>");
+        	if (args.length != 4){
+        		error();
         		return;
         	}
-        	if (!args[0].contains("e") && !args[0].contains("d")){
-        		System.err.println("Usage: java RSA <e/d> <key pair \"N,e/d\">");
+        	if (!args[1].contains("e") && !args[1].contains("d") && !args[0].contains("b") && !args[0].contains("n")){
+        		error();
         		return;
         	}
+
         	//Setup key
-        	String key = args[1] + "," + args[2];
+        	String key = args[2] + "," + args[3];
+        	boolean isByte = true;
+
+        	if (args[0].contains("n"))
+        		isByte = false;
+
 
         	//Get bytes from standard input.
         	ArrayList<Byte> message = new ArrayList<Byte>();
@@ -94,19 +101,31 @@ public class RSA {
 
            	//Encrypt/decrypt
            	byte[] output;
-           	if (args[0].contains("e")){
-           		output = encrypt(messageBytes, key);
-           		outputStream.write(output);
-           		outputStream.close();
+           	if (args[1].contains("e")){
+           		output = encrypt(messageBytes, key, isByte);
+           		if (isByte){
+	           		outputStream.write(output);
+	           		outputStream.close();
+	           	}else{
+	           		long longVal = Tools.byteArrayToLong(output);
+           			System.out.print(longVal);
+	           	}
            	}
-           	else{
-           		output = decrypt(messageBytes, key);
+           	else if (args[1].contains("db")){
+           		output = decrypt(messageBytes, key, isByte, true);
+           		if (isByte)
+           			System.out.println(new String(output));
+           		else
+           			System.out.println(Tools.byteArrayToLong(output));
+           
+           	}else{
+           		output = decrypt(messageBytes, key, isByte);
            		System.out.println(new String(output));
            	}
         } catch(Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            System.err.println("Usage: java RSA <e/d> <key N> <key e/d>");
+            error();
         	return;
         }
     }
@@ -120,13 +139,22 @@ public class RSA {
     	key.printKey();
     	System.out.println("Encrpyted with key: ");
     	//Encrypt message with this generated key
-    	return encrypt(message, key.getPublicKey());
+    	return encrypt(message, key.getPublicKey(), false);
     }
 
     //Overloaded encrypt method to encrypt a message with a given key
-    public static byte[] encrypt(byte[] message, String key){ 
-    	//Message
-    	BigInteger bIMessage = new BigInteger(message);
+    public static byte[] encrypt(byte[] message, String key, boolean isByte){
+    	BigInteger bIMessage = BigInteger.ONE;
+    	if (isByte){
+			//Message as bytes
+	    	bIMessage = new BigInteger(message);
+    	}
+    	else{
+    		//Message as a number
+    		String messageString = new String(message);
+    		long messageValue = Long.parseLong(messageString);
+    		bIMessage = BigInteger.valueOf(messageValue);
+    	}
 
     	//Key
     	String[] keyParts = key.split(",");
@@ -143,11 +171,52 @@ public class RSA {
         return bIMessage.modPow(e,n).toByteArray();
     }
 
-    public static byte[] decrypt(byte[] message, String key){
-    	//Message
-        BigInteger bIMessage = new BigInteger(message);
+    //Decrypts a text through it's public key by brute forcing it's private key.
+    public static byte[] decrypt(byte[] message, String key, boolean isByte, boolean isPublicKey){
+    	if (!isPublicKey)
+    		decrypt(message, key, isByte);
 
-        //Key
+    	String[] parts = key.split(",");
+    	//Find p and q
+    	BigInteger n = new BigInteger(parts[0]);
+    	BigInteger p = new BigInteger("3");
+    	BigInteger e = new BigInteger(parts[1]);
+
+    	//Brute force the private key.
+    	while (p.compareTo(n) != 0){
+    		if (n.mod(p).equals(BigInteger.ZERO))
+    			break;
+
+    		p = p.add(BigInteger.ONE);
+    	}
+
+    	//After finding a factor we now have both p and q.
+    	BigInteger q = n.divide(p);
+
+    	//Find phi of n so we can word out the inverse of e.
+    	BigInteger phiN = p.subtract(BigInteger.ONE).multiply(q.subtract(BigInteger.ONE)); 
+    	BigInteger d = e.modInverse(phiN);
+
+    	//Return key.
+    	String privateKey = n.toString() + "," + d.toString();
+    	System.out.println("Full Key: " + "\ne: " + e.toString() + "\nd: " + d.toString() + "\nN: " + n.toString());
+    	return decrypt(message, privateKey, isByte);
+    }
+
+    public static byte[] decrypt(byte[] message, String key, boolean isByte){
+        BigInteger bIMessage = BigInteger.ONE;
+    	if (isByte){
+			//Message
+	    	bIMessage = new BigInteger(message);
+    	}
+    	else{
+    		//Formatted as a number.
+    		String messageString = new String(message);
+    		long messageValue = Long.parseLong(messageString);
+    		bIMessage = BigInteger.valueOf(messageValue);
+    	}
+
+    	//Key
     	String[] keyParts = key.split(",");
     	BigInteger d = new BigInteger(keyParts[1]);
     	BigInteger n = new BigInteger(keyParts[0]);
@@ -194,5 +263,13 @@ public class RSA {
         }
         Key generatedKey = new Key(n, e, d);
         return generatedKey;
+    }
+
+    public static void error(){
+    	System.err.println("Usage: cat input | java RSA <b/n> <e/d> <key N> <key e/d>");
+		System.err.println("<b/n>: Is asking what format your text is coming in, if it's to be treated as bytes (b), or a long number (n).");
+		System.err.println("<e/d>: Is asking whether you want to encrypt (e) or decrypt (d) the given input.");
+		System.err.println("Or to try brute force a cypher: ");
+		System.err.println("Usage: cat cypher | java RSA <b/n> db n e");
     }
 }

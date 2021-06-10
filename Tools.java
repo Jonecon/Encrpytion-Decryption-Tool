@@ -50,6 +50,9 @@ public class Tools {
 				input += line + '\n';
 			}
 
+			//Get rid of the added new line.
+			input = input.replaceAll("[\\n]$", "");
+
 			reader.close();
 			return input;
 
@@ -155,6 +158,16 @@ public class Tools {
 		}
 
 		return dictionary;
+	}
+
+	
+	public static long byteArrayToLong(byte[] bytes) {
+		long l = 0;
+		for (int i=0; i<bytes.length; i++) {
+			l <<= 8;
+			l ^= (long) bytes[i] & 0xff;
+		}
+		return l;
 	}
 
 
