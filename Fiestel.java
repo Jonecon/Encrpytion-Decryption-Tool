@@ -1,3 +1,4 @@
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -70,6 +71,10 @@ public class Fiestel {
     //calculates the output for the right side
     private static boolean[] stepCalc(boolean[] leftM, boolean[] rightM, int key){
 
+        if(leftM.length != rightM.length){
+            System.out.println("There was a discrepancy between left and right arrays");
+        }
+
         boolean[] a;
 
         switch(key){
@@ -89,19 +94,19 @@ public class Fiestel {
                 a = func5(rightM);
                 break;
             case 6:
-                a = func6(rightM);
+                a = func2(rightM);
                 break;
             case 7:
                 a = func7(rightM);
                 break;
             case 8:
-                a = func8(rightM);
+                a = func2(rightM);
                 break;
             case 9:
                 a = func9(rightM);
                 break;
             case 0:
-                a = func0(rightM);
+                a = func2(rightM);
                 break;
             default:
                 a = arrayCopy(rightM);
@@ -110,6 +115,11 @@ public class Fiestel {
         for(int i = 0; i < rightM.length; i++){ //xor with func(rightM) and leftM
             a[i] = leftM[i] ^ a[i];
         }
+
+        if(leftM.length != a.length){
+            System.out.println("There was a length discrepancy after performing stepCalc()");
+        }
+
         return a;
     }
 
@@ -356,9 +366,10 @@ public class Fiestel {
     //generates a random key 20 digits long
     public static String genRandomKey(){
 
-        String key = "" + (int)(Math.random() * 10);
+        //String key = "" + (int)(Math.random() * 10);
+        String key = "";
 
-        for(int i = 0; i < 10; i++){
+        for(int i = 0; i < 5; i++){
             key += (int)(Math.random() * 10);
         }
 
@@ -436,6 +447,15 @@ public class Fiestel {
             myWriter.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
+        }
+    }
+
+    public static void writeToFile(byte[] bytes){
+        try (FileOutputStream fos = new FileOutputStream("decrypt.txt")) {
+            fos.write(bytes);
+        }
+        catch(Exception e){
+
         }
     }
 
