@@ -40,14 +40,10 @@ public class CryptotronThreeThousand {
             String inputText = "";
             byte[] byteInputText = null;
 
-            inputText = Tools.readStdIn();
-//            if (!cipher.equals("rsa") || action.equals("encrypt"))
-//                inputText = Tools.readStdIn();
-//            else
-//                byteInputText = Tools.readStdInBytes();
-
-            if (cipher != null && cipher.equals("rsa") && action.equals("decrypt")) {
+            if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
                 byteInputText = Tools.readStdInBytes();
+            } else {
+                inputText = Tools.readStdIn();
             }
 
             switch (action) {
