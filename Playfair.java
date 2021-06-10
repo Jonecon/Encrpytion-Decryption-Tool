@@ -57,7 +57,8 @@ public class Playfair{
 			
 			for(int t = 0; t < 100; t++){
 			
-				String pKey = randomKey();
+				//String pKey = randomKey();
+				String pKey = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
 				String pText = decrypt(cypher, pKey);
 				float pScore = getFitnessScore(pText, stats);
 				int lastChanged = 0;

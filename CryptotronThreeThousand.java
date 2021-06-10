@@ -218,7 +218,7 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "playfair":
-									//System.out.println(Playfair.decrypt(inputText));
+									System.out.println(Playfair.decrypt(inputText));
                                     break;
                                 case "fiestel":
                                     //System.out.println(Fiestel.smartDecrypt(inputText));
