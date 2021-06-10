@@ -64,6 +64,25 @@ public class SimpleSubstitution {
             substitutionMap.put(a, b);
             substitutionMap.put(b, a);
         }
+        //Add other characters to stop problems
+        substitutionMap.put('\n','\n');
+        substitutionMap.put('\t','\t');
+        for(int i = 32; i <= 64; i++)
+        {
+            char c = (char)i;
+            substitutionMap.put(c,c);
+        }
+        for(int i = 91; i <= 96; i++)
+        {
+            char c = (char)i;
+            substitutionMap.put(c,c);
+        }
+        for(int i = 123; i <= 126; i++)
+        {
+            char c = (char)i;
+            substitutionMap.put(c,c);
+        }
+
     }
 
     public static String Substitution(String text, String key)
