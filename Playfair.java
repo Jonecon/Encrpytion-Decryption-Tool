@@ -64,7 +64,7 @@ public class Playfair{
 	}
 	
 	public static String encrypt(String message){
-		String key = getRandomKey();
+		String key = randomKey();
 		System.err.println("Key: " + key);
 		return convertText(message, key, true);
 	}
@@ -83,7 +83,7 @@ public class Playfair{
 			
 			for(int t = 0; t < 100; t++){
 			
-				String pKey = getRandomKey();
+				String pKey = randomKey();
 				String pText = decrypt(cypher, pKey);
 				float pScore = getFitnessScore(pText, stats);
 				int lastChanged = 0;
@@ -144,7 +144,7 @@ public class Playfair{
 		return score;
 	}
 	
-	private static String getRandomKey(){	
+	public static String randomKey(){	
 		StringBuilder sb = new StringBuilder("ABCDEFGHIKLMNOPQRSTUVWXYZ");
 		String rKey = "";
 		for(int i = 25; i > 0; i--){
