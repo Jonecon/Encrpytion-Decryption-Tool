@@ -1,6 +1,8 @@
 import java.io.*;
 import java.util.*;
-import java.lang.*;  
+import java.lang.*;
+
+import java.text.DecimalFormat;
 
 public class LocalTransposition {
 
@@ -12,11 +14,16 @@ public class LocalTransposition {
 	public static void main(String[] args) {
 		try {
 
-			// String strCycle = (args.length == 1) ? args[0] : null;
-			// String encryptMsg = localTrans(Tools.readStdIn(), strCycle, "encrypt");
-			// String decryptMsg = localTrans(encryptMsg, strCycle, "decrypt");
+			String strCycle = (args.length == 1) ? args[0] : null;
+
+			// String encryptMsg = transposition(Tools.readStdIn(), strCycle, "encrypt");
+			// System.out.println(encryptMsg);
+
+			// String decryptMsg = transposition(Tools.readStdIn(), strCycle, "decrypt");
+			// System.out.println(decryptMsg);
 
 			String decryptMsgWithNoKey = decryptWithNoKey(Tools.readStdIn());
+			// System.out.println(decryptMsgWithNoKey);
 
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
@@ -29,6 +36,8 @@ public class LocalTransposition {
 
 		/**** DECLARE VARIABLES ****/
 		// FOR THE ENCRYPTED MSG
+		msg = Tools.removeSpaces(msg);
+		msg = Tools.simplifyMessage(msg);
 		String encyptedMsg = "";
 		StringBuilder encrypted = new StringBuilder();
 
@@ -57,10 +66,6 @@ public class LocalTransposition {
 		int moveToWhere = 0;
 
 		/**** SEPARATE THE MESSAGE INTO BLOCK SIZE OF THE CYCLE LEN ****/
-		// REMOVE THE LAST NEWLINE ON .TXT
-		if (msg.substring(msg.length()-1).equals("\n")) {
-			msg = msg.substring(0, msg.length()-1);	
-		}
 		String[] blocks = msg.split("(?<=\\G.{"+ cycle.size() +"})");
 		Collections.addAll(blockMessages, blocks);
 
@@ -75,7 +80,7 @@ public class LocalTransposition {
 			// IF THE BLOCK DOES NOT HAVE THE SIZE OF THE CYCLE
 			while(copy.size() != cycle.size()) {
 				// ADD PADDING
-				copy.add(" ");
+				copy.add("x");
 			}
 
 			// ADD THIS ARRAYLIST TO THE MAIN ARRAYLIST
@@ -163,26 +168,185 @@ public class LocalTransposition {
 
 	public static String decryptWithNoKey(String msg) {
 
-		/**** REMOVE THE LAST NEWLINE ON .TXT ****/
-		if (msg.substring(msg.length()-1).equals("\n")) {
-			msg = msg.substring(0, msg.length()-1);	
-		}
+		/**** DECLARE DEBUGGING VARIABLES ****/
+		StringBuilder blockmsg = new StringBuilder();
+		int blockIndex;
 
 		/**** DECLARE VARIABLES ****/
-		String copy = msg;
+		msg = Tools.removeSpaces(msg);
+		String copyOFmsg = msg;
 		int lenofmsg = msg.length();
+
+		// FOR BLOCKS OF TEXT
+		ArrayList<ArrayList<String>> eachBlock = new ArrayList<ArrayList<String>>();
+		ArrayList<String> blockMessages = new ArrayList<String>();
+		ArrayList<String> tempBlock = new ArrayList<String>();
+		ArrayList<String> copy = new ArrayList<String>();
+
+		// FOR DECRYPTING
 		ArrayList<Integer> possibleLenValue = getPossiblePiCycleLen(lenofmsg);
+		StringBuilder bigram = new StringBuilder();
+		String firstLetter, secondLetter, cycleKey;
+
+		// FOR SCORING
+		DecimalFormat df = new DecimalFormat("#,###.##");
+		HashMap<String, Integer> cycleScores = new HashMap<>();
+		HashMap<String, Integer> possCycle = new HashMap<>();
+		HashMap<String, Integer> bigramScores = new HashMap<>();
+		int highScore = 0;
+		String highKeycycle = "null";
+
+		/**** GETTING THE SCORE FROM CSV FILE ****/
+		try {
+
+			// READ THE FILE
+			BufferedReader br = new BufferedReader(new FileReader("values.csv"));
+			String line = br.readLine();
+
+			// WHILE ITS NOT THE END OF THE FILE
+			while(line != null){
+
+				// SPLIT INTO 2 (KEY AND SCORE) THEN ADD TO THE HASH
+				String[] parts = line.split(",");
+				bigramScores.put(parts[0], Integer.parseInt(parts[1]));
+				line = br.readLine();
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+			e.printStackTrace();
+		}
+
+		for (int poslen : possibleLenValue) {
+
+			/**** SEPARATE THE MESSAGE INTO BLOCK SIZE OF THE CYCLE LEN ****/
+			String[] blocks = msg.split("(?<=\\G.{"+ poslen +"})");
+			Collections.addAll(blockMessages, blocks);
+
+			/**** MAKE EACH BLOCK INTO AN ARRAYLIST AND PUT INTO AN ARRAYLIST(MAIN ARRAYLIST) ****/
+			// FOR EACH BLOCK
+			for (String block : blockMessages) {
+
+				// SPLIT THE BLOCK THEN CONVERT INTO ARRAYLIST
+				Collections.addAll(tempBlock, block.split(""));
+				copy = copyArrayListStr(tempBlock);
+
+				// IF THE BLOCK DOES NOT HAVE THE SIZE OF THE CYCLE
+				while(copy.size() != poslen) {
+					// ADD PADDING
+					copy.add(" ");
+				}
+
+				// ADD THIS ARRAYLIST TO THE MAIN ARRAYLIST
+				eachBlock.add(copy);
+				tempBlock.clear();
+			}
+
+			/* DEBUGGING */
+
+			// blockIndex = 0;
+			// System.out.println("\nBlockString:\n");
+			// for (String block : blockMessages ) {
+			// 	System.out.println(blockIndex + " " + block);
+			// 	blockIndex++;
+			// }
+
+			blockIndex = 0;
+			System.out.println("\nEachBlock: " + poslen + "\n");
+			for (ArrayList<String> block : eachBlock) {
+				
+				System.out.print(blockIndex + " ");
+				for (String letter : block) {
+					System.out.print(letter + " ");
+				}
+				System.out.print("\n");
+				blockIndex++;
+			}
+			System.out.println("");
+
+			/**** COMPARING BIGRAMS IN COLUMN AND GETTING THE HIGHEST SCORE ****/
+			// FOR EACH ROW (FIRST LETTER)
+			for (int i = 0; i < poslen; i++) {
+
+				// FOR EACH ROW (SECOND LETTER)
+				for (int j = 0; j < poslen; j++) {
+
+					if (i != j) {
+
+						// FOR EACH COLUMN
+						for (int k = 0; k < eachBlock.size(); k++) {
 
 
+							// GET THE CYCLE KEY
+							cycleKey = i+"->"+j;
 
+							// GET THE BIGRAM
+							firstLetter = eachBlock.get(k).get(i);
+							secondLetter = eachBlock.get(k).get(j);
+							bigram.append(firstLetter);
+							bigram.append(secondLetter);
+
+							// GET THE SCORE OF THE BIGRAM
+							int bigramScore = bigramScores.get(bigram.toString().toUpperCase());
+							int totalScore = cycleScores.get(cycleKey) != null ? cycleScores.get(cycleKey) + bigramScore : bigramScore;
+
+							// ADD THE BIGRAM TO THE HASH
+							cycleScores.put(cycleKey, totalScore);
+							bigram.delete(0, bigram.length());
+						}
+					}
+				}
+			}
+
+			/* DEBUGGING */
+			for (String k : cycleScores.keySet()) {
+				System.out.println(k + ":\t" + df.format(cycleScores.get(k)));
+			}
+			System.out.println("");
+
+			/**** FINDING THE KEY CYCLE IN THE CURRENT LEN ****/
+			// FOR EACH COLUMN (FIRST CYCLE)
+			for (int i = 0; i < poslen; i++) {
+				
+				// FOR EACH COLUMN (SECOND CYCLE)
+				for (int j = 0; j < poslen; j++) {
+
+					if (i != j) {
+
+						// GET THE CURRENT CYCLE OF THE HASH (ONE CYCLE)
+						String currKeycycle = i + "->" + j;
+						int currScore = cycleScores.get(currKeycycle);
+
+						// COMPARE TO THE HIGHEST SCORE
+						highKeycycle = highScore > currScore ? highKeycycle : currKeycycle;
+						highScore = highScore > currScore ? highScore : currScore;
+					}
+				}
+
+				possCycle.put(highKeycycle, highScore);
+				highScore = 0;
+			}
+
+			/* DEBUGGING */
+			for (String k : possCycle.keySet()) {
+				System.out.println(k + ":\t" + df.format(possCycle.get(k)));
+			}
+			System.out.println("");
+
+			cycleScores.clear();
+			possCycle.clear();
+			blockMessages.clear();
+			eachBlock.clear();
+		}
 
 		/* DEBUGGING */
+		System.out.println("\n");
 		System.out.println("msg to decrypt: " + msg);
 		System.out.println("msg length: " + lenofmsg);
 		System.out.println("length sqrt: " + (int)Math.sqrt(lenofmsg));
 		System.out.println("possible length: " + possibleLenValue);
 
-		return copy;
+		return copyOFmsg;
 
 	} 
 
@@ -280,12 +444,6 @@ public class LocalTransposition {
 			al.add(i);
 		}
 
-		// System.out.println("min: " + min);
-		// System.out.println("max: " + max);
-		// System.out.println("msglen: " + msglen + "\n");
-
-		// System.out.println("Original: " + al + "\n");
-
 		/**** SHUFFLE ARRAYLIST ****/
 		// WHILE THERE ARE STILL ELEMENTS TO SHUFFLE
 		currIndex = al.size();
@@ -299,8 +457,6 @@ public class LocalTransposition {
 			al.set(currIndex, al.get(randIndex));
 			al.set(randIndex, temp);
 		}
-
-		// System.out.println("Shuffled: " + al  + "\n");
 
 		return al;
 	}
@@ -317,7 +473,7 @@ public class LocalTransposition {
 		int sqrLen = (int)Math.sqrt(lenNumber);
 
 		/**** CHECK IF IT A FACTOR ****/
-		for (int number = 1; number <= sqrLen; number++) {
+		for (int number = 3; number <= sqrLen; number++) {
 			
 			// IF ITS A FACTOR - DOES NOT HAVE REMAINDER
 			if ((lenNumber % number) == 0) {
@@ -327,7 +483,7 @@ public class LocalTransposition {
 				bigVal = lenNumber/number;
 
 				/**** ADD TO THE ARRAYLIST IF ITS NOT ADDED YET ****/
-				possibleLenValue.add(smallVal);
+				possibleLenValue.add(smallVal);	
 				
 				if (!possibleLenValue.contains(bigVal)) {
 					possibleLenValue.add(bigVal);
