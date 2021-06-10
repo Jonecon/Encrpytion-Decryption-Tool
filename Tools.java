@@ -160,6 +160,16 @@ public class Tools {
 		return dictionary;
 	}
 
+	
+	public static long byteArrayToLong(byte[] bytes) {
+		long l = 0;
+		for (int i=0; i<bytes.length; i++) {
+			l <<= 8;
+			l ^= (long) bytes[i] & 0xff;
+		}
+		return l;
+	}
+
 
 	public static double chiSquare(String input) {
 		int inputLength = input.length();
