@@ -479,7 +479,6 @@ public class Fiestel {
     public static String cleanMessage(String m){
 
         for(int i = 0; i < m.length(); i++){
-            //System.out.print("T");
             if(m.charAt(i) != ' '){
                 if(!(m.charAt(i) >= 'a' && m.charAt(i) <= 'z')){
                     if(!(m.charAt(i) >= 'A' && m.charAt(i) <= 'Z')){

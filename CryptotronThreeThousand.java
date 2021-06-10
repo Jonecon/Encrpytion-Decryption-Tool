@@ -101,6 +101,8 @@ public class CryptotronThreeThousand {
                             Fiestel.writeToFile(s, "encryptedText.txt");
                             Fiestel.writeToFile(Fiestel.decrypt(s,key), "decryptedText.txt");
 
+                            System.out.println("");
+
                             System.out.println(Fiestel.decrypt(s,key));
 
                             //byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
