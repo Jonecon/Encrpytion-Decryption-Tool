@@ -84,14 +84,17 @@ public class CryptotronThreeThousand {
                             }
                             // I just have encrypt + decrypt here rn for ease of testing
                             String s = Fiestel.encrypt(inputText, key);
-                            //byte[] encryptedMessage = s.getBytes();
-                            //byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
-                            //Tools.outputBytes(encryptedMessage);
-                            //System.out.println("String s: " + s);
-                            System.out.println(s);
 
+                            System.out.println("Input Length:  " + inputText.length());
+                            System.out.println("Output Length: " + s.length());
+
+                            System.out.println(s);
                             System.out.println(Fiestel.decrypt(s,key));
 
+                            byte[] encryptedMessage = Fiestel.encrypt(inputText.getBytes(), key);
+                            Fiestel.writeToFile(encryptedMessage);
+
+                            //Tools.outputBytes(encryptedMessage);
                             break;
                         case "rsa":
                             if (args[3] == null){
@@ -138,9 +141,18 @@ public class CryptotronThreeThousand {
                                     break;
                                 case "fiestel":
                                     //System.out.println(new String(Fiestel.decrypt(byteInputText, key)));
-                                    String s = new String(byteInputText);
-                                    String m = Fiestel.decrypt(s,key);
+                                    //String s = new String(byteInputText);
+
+                                    String fixedText = inputText.substring(0,inputText.length() - 1);
+
+                                    System.out.println(fixedText);
+
+                                    String m = Fiestel.decrypt(fixedText,key);
                                     System.out.println(m);
+
+                                    System.out.println("Input Length:  " + fixedText.length());
+                                    System.out.println("Output Length: " + m.length());
+
                                     break;
                                 case "rsa":
                                     if (args[3] == null){
