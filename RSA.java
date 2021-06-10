@@ -47,7 +47,7 @@ public class RSA {
 	        		if (encryptedMessage == null)
 	        			return;
 
-	            	byte[] decryptedMessage = decrypt(encryptedMessage, privateKey);
+	            	byte[] decryptedMessage = decrypt(encryptedMessage, privateKey, true);
 
 	            	System.out.println("Original Message: " + message);
 		           	System.out.println("Encrypted Message: ");
@@ -116,7 +116,7 @@ public class RSA {
            		System.out.println(new String(output));
            
            	}else{
-           		output = decrypt(messageBytes, key);
+           		output = decrypt(messageBytes, key, true);
            		System.out.println(new String(output));
            	}
         } catch(Exception e) {
@@ -169,9 +169,9 @@ public class RSA {
         return bIMessage.modPow(e,n).toByteArray();
     }
 
-    public static byte[] decrypt(byte[] message, String key, boolean isPublicKey){
+    public static byte[] decrypt(byte[] message, String key, boolean isByte, boolean isPublicKey){
     	if (!isPublicKey)
-    		decrypt(message, key);
+    		decrypt(message, key, isByte);
 
     	String[] parts = key.split(",");
     	//Find p and q
@@ -193,27 +193,14 @@ public class RSA {
     	System.out.println("Key is: ");
     	System.out.println("p: " + p.toString() + " q: " + q.toString() + " d: " + d.toString() + " e: " + e.toString());
     	String privateKey = n.toString() + "," + d.toString();
-    	String messageString = new String(message);
-    	long messageValue = Long.parseLong(messageString);
-    	System.out.println(decrypt(messageValue, privateKey));
+    	//String messageString = new String(message);
+    	//long messageValue = Long.parseLong(messageString);
+    	System.out.println(decrypt(message, privateKey, isByte));
     	return null;
 
     }
 
-    public static BigInteger decrypt(long message, String key){
-    	//Message
-        BigInteger bIMessage = BigInteger.valueOf(message);
-
-        //Key
-    	String[] keyParts = key.split(",");
-    	BigInteger d = new BigInteger(keyParts[1]);
-    	BigInteger n = new BigInteger(keyParts[0]);
-
-    	//Decrypting.
-        return bIMessage.modPow(d,n);
-    }
-
-    public static byte[] decrypt(byte[] message, String key){
+    public static byte[] decrypt(byte[] message, String key, boolean isByte){
     	//Message
         BigInteger bIMessage = new BigInteger(message);
 

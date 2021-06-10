@@ -40,18 +40,12 @@ public class CryptotronThreeThousand {
             String inputText = "";
             byte[] byteInputText = null;
 
-            /*if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
+            if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
                 byteInputText = Tools.readStdInBytes();
                 //System.out.println(new String(byteInputText));
             } else {
                 inputText = Tools.readStdIn();
-            } */
-
-            if (!cipher.equals("rsa") || action.equals("encrypt"))
-                inputText = Tools.readStdIn();
-            else 
-                byteInputText = Tools.readStdInBytes();
-
+            } 
 
             switch (action) {
                 case "encrypt":
@@ -109,7 +103,7 @@ public class CryptotronThreeThousand {
                             }
                             //My key is in the form N e/d so I would need 2 args for this.
                             String RSAKey = key + "," + args[3];
-                            byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey);
+                            byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey, true);
                             Tools.outputBytes(encrpytedMessage);
                             break;
                         default:
@@ -168,7 +162,7 @@ public class CryptotronThreeThousand {
                                     }
                                     //My key is in the form N e/d so I would need 2 args for this.
                                     String RSAKey = key + "," + args[3];
-                                    System.out.println(new String(RSA.decrypt(byteInputText, RSAKey)));
+                                    System.out.println(new String(RSA.decrypt(byteInputText, RSAKey, true)));
                                     break;
                                 default:
                                     unrecognisedCipher();
