@@ -8,6 +8,8 @@ public class CryptotronThreeThousand {
         // args[1] is name of cipher
         // args[2] is the key
         // args[3] RSA key part 2
+        // args[4] Input is a number (n) or text (b)
+        // args[5] RSA decrypt with public key
         try {
             // if no args provided, show how to use
             if (args.length == 0) {
@@ -97,13 +99,19 @@ public class CryptotronThreeThousand {
                             //Tools.outputBytes(encryptedMessage);
                             break;
                         case "rsa":
-                            if (args[3] == null){
+                            if (args[3] == null || args[3].contains("n") || args[3].contains("b") || args[3].equals("1") || args[3].equals("0")){
                                 System.err.println("Incorrect key supplied");
                                 break;
                             }
                             //My key is in the form N e/d so I would need 2 args for this.
                             String RSAKey = key + "," + args[3];
-                            byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey, true);
+
+                            //
+                            boolean isByte = true;
+                            if (args[4].contains("n"))
+                                isByte = false;
+
+                            byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey, isByte);
                             Tools.outputBytes(encrpytedMessage);
                             break;
                         default:
@@ -156,13 +164,36 @@ public class CryptotronThreeThousand {
                                     break;
                                 case "rsa":
                                     //System.out.println("Inside RSA");
-                                    if (args[3] == null){
+                                    if (args[3] == null || args[3].contains("n") || args[3].contains("b") || args[3].equals("1") || args[3].equals("0")){
                                         System.err.println("Incorrect key supplied");
                                         break;
                                     }
+
                                     //My key is in the form N e/d so I would need 2 args for this.
                                     String RSAKey = key + "," + args[3];
-                                    System.out.println(new String(RSA.decrypt(byteInputText, RSAKey, true)));
+
+                                    //Figure out whether the string is an int or a byte.
+                                    boolean isByte = true;
+                                    if (args[4].contains("n"))
+                                        isByte = false;
+
+
+                                    if (args[5] == null || args[5].equals("0")){
+                                        byte[] output = RSA.decrypt(byteInputText, RSAKey, isByte);
+                                        if (isByte)
+                                            System.out.println(new String(output));
+                                        else
+                                            System.out.println(Tools.byteArrayToLong(output));
+
+                                    }
+                                    else{
+                                        byte[] output = RSA.decrypt(byteInputText, RSAKey, isByte, true);
+                                        if (isByte)
+                                            System.out.println(new String(output));
+                                        else
+                                            System.out.println(Tools.byteArrayToLong(output));
+                                    }
+                                    
                                     break;
                                 default:
                                     unrecognisedCipher();
@@ -232,7 +263,7 @@ public class CryptotronThreeThousand {
 
     private static void howToUse() {
         System.err.println("To use Cryptotron3000, use the command:");
-        System.err.println("type(or cat if using linux) filename.txt | java CryptotronThreeThousand action cipher key > destinationfilename.txt");
+        System.err.println("type(or cat if using linux) filename.txt | java CryptotronThreeThousand <action> <cipher> <key> <optional e|d RSA key> <b|n> <Decrypt Public Key: 0|1> > destinationfilename.txt");
         System.err.println("action being one of the following:");
         System.err.println("encrypt, decrypt, letterfrequency, indexofcoincidence");
     }
