@@ -4,15 +4,43 @@ import java.math.BigInteger;
 
 public class RSA {
 
+	public static class Key{
+		private BigInteger _n, _e, _d;
+
+		public Key(BigInteger n, BigInteger e, BigInteger d){
+			_n = n;
+			_d = d;
+			_e = e;
+		}
+
+		public String getPublicKey(){
+			return formatKey(_n.toString(), _e.toString());
+		}
+
+		public String getPrivateKey(){
+			return formatKey(_n.toString(), _d.toString());
+		}
+
+		public String formatKey(String n, String eOrD){
+    		return n + "," + eOrD;
+    	}
+
+		public void printKey(){
+	    	//print each part of key's
+	    	System.out.println("e: " + _e + "\n");
+	    	System.out.println("d: " + _d + "\n");
+	    	System.out.println("N: " + _n);
+	    }
+	}
+
     public static void main(String[] args) {
         try {
         	if (args.length == 2){
         		if (args[0].contains("-t")){
         			String message = args[1];
-	        		String keys = generateKey(1024);
-	            	String[] parts = keys.split(";");
-	           	 	String publicKey = parts[0];
-	            	String privateKey = parts[1];
+	        		Key keys = generateKey(1024);
+	           	 	String publicKey = keys.getPublicKey();
+	            	String privateKey = keys.getPrivateKey();
 
 	        		byte[] encryptedMessage = encrypt(message.getBytes(), publicKey);
 
@@ -27,21 +55,16 @@ public class RSA {
 		            System.out.println("Decrypted String: " + new String(decryptedMessage)); 
 		            return;
         		}else if (args[0].contains("-g")){
-        			String key = generateKey(Integer.parseInt(args[1]));
-        			String[] keyParts = key.split(";");
-        			String[] publicKeyParts = keyParts[0].split(",");
-        			String[] privateKeyParts = keyParts[1].split(",");
-
-        			System.out.println("N: " + publicKeyParts[0]);
-        			System.out.println("e: " + publicKeyParts[1]);
-        			System.out.println("d: " + privateKeyParts[1]);
-        			System.out.println(generateKey(Integer.parseInt(args[1])));
+        			Key key = generateKey(Integer.parseInt(args[1]));
+        			key.printKey();
         			return;
         		}else{
         			System.err.println("Usage: java RSA <e/d> <key N> <key e/d>");
         			return;
         		}
         	}
+
+        	//Error checking.
         	if (args.length != 3){
         		System.err.println("Usage: java RSA <e/d> <key N> <key e/d>");
         		return;
@@ -50,6 +73,7 @@ public class RSA {
         		System.err.println("Usage: java RSA <e/d> <key pair \"N,e/d\">");
         		return;
         	}
+
         	//Setup key
         	String key = args[1] + "," + args[2];
 
@@ -92,12 +116,12 @@ public class RSA {
     //Overloaded encrypt method to deal with not being given a key.
     public static byte[] encrypt(byte[] message){
     	//Generate a key
-    	String key = generateKey(1024);
+    	Key key = generateKey(1024);
     	
-    	printKey(key);
-
+    	key.printKey();
+    	System.out.println("Encrpyted with key: ");
     	//Encrypt message with this generated key
-    	return encrypt(message, key);
+    	return encrypt(message, key.getPublicKey());
     }
 
     //Overloaded encrypt method to encrypt a message with a given key
@@ -134,7 +158,7 @@ public class RSA {
     }
 
     //Generates a key from a given bit size
-    public static String generateKey(int bitLength){
+    public static Key generateKey(int bitLength){
     	Random rand = new Random();
     	BigInteger p = BigInteger.probablePrime(bitLength, rand);
     	BigInteger q = BigInteger.probablePrime(bitLength, rand);
@@ -142,7 +166,7 @@ public class RSA {
     }
 
     //Generate a public and private key from two distinct prime numbers.
-    public static String generateKey(BigInteger p, BigInteger q){
+    public static Key generateKey(BigInteger p, BigInteger q){
         //Generate Public Key.
         int[] eValues = {65537,257,17,5,3};
         BigInteger  n = p.multiply(q);
@@ -169,31 +193,7 @@ public class RSA {
         	//System.out.println("Re attempting generation of key.");
         	return generateKey(p.bitLength());
         }
-
-        String publicKey = formatKey(n.toString(), e.toString());
-        String privateKey = formatKey(n.toString(), d.toString());
-        return publicKey + ";" + privateKey;
-    }
-
-    public static String formatKey(String n, String eOrD){
-    	return n + "," + eOrD;
-    }
-
-    public static void printKey(String key){
-    	//Split public and private key
-    	String[] keyParts = key.split(";");
-
-    	//Get components
-    	String[] publicKeyParts = keyParts[0].split(",");
-    	String[] privateKeyParts = keyParts[1].split(",");
-
-    	BigInteger e = new BigInteger(publicKeyParts[1]);
-    	BigInteger d = new BigInteger(privateKeyParts[1]);
-    	BigInteger n = new BigInteger(privateKeyParts[0]);
-
-
-    	System.out.println("e: " + e + "\n");
-    	System.out.println("d: " + d + "\n");
-    	System.out.println("N: " + n);
+        Key generatedKey = new Key(n, e, d);
+        return generatedKey;
     }
 }

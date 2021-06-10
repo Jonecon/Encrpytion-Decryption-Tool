@@ -50,6 +50,9 @@ public class Tools {
 				input += line + '\n';
 			}
 
+			//Get rid of the added new line.
+			input = input.replaceAll("[\\n]$", "");
+
 			reader.close();
 			return input;
 

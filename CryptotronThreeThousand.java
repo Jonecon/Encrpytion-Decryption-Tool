@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.*;
 
 public class CryptotronThreeThousand {
 
@@ -41,12 +39,20 @@ public class CryptotronThreeThousand {
             // it still has punctuation and line breaks etc.
             String inputText = "";
             byte[] byteInputText = null;
-            
+
+            /*if (cipher != null && cipher.equals("rsa") && !action.equals("encrypt")) {
+                byteInputText = Tools.readStdInBytes();
+                //System.out.println(new String(byteInputText));
+            } else {
+                inputText = Tools.readStdIn();
+            } */
+
             if (!cipher.equals("rsa") || action.equals("encrypt"))
                 inputText = Tools.readStdIn();
             else 
                 byteInputText = Tools.readStdInBytes();
-            
+
+
             switch (action) {
                 case "encrypt":
                     switch (cipher) {
@@ -75,7 +81,7 @@ public class CryptotronThreeThousand {
                             System.out.println(LocalTransposition.transposition(inputText, key, "encrypt"));
                             break;
                         case "playfair":
-
+                            System.out.println(Playfair.encrypt(inputText, key));
                             break;
                         case "fiestel":
                             if(key == null){
@@ -102,7 +108,7 @@ public class CryptotronThreeThousand {
                                 break;
                             }
                             //My key is in the form N e/d so I would need 2 args for this.
-                            String RSAKey = RSA.formatKey(key, args[3]);
+                            String RSAKey = key + "," + args[3];
                             byte[] encrpytedMessage = RSA.encrypt(inputText.getBytes(), RSAKey);
                             Tools.outputBytes(encrpytedMessage);
                             break;
@@ -137,7 +143,7 @@ public class CryptotronThreeThousand {
                                     System.out.println(LocalTransposition.transposition(inputText, key, "decrypt"));
                                     break;
                                 case "playfair":
-
+                                    System.out.println(Playfair.decrypt(inputText, key));
                                     break;
                                 case "fiestel":
                                     //System.out.println(new String(Fiestel.decrypt(byteInputText, key)));
@@ -155,12 +161,13 @@ public class CryptotronThreeThousand {
 
                                     break;
                                 case "rsa":
+                                    //System.out.println("Inside RSA");
                                     if (args[3] == null){
                                         System.err.println("Incorrect key supplied");
                                         break;
                                     }
                                     //My key is in the form N e/d so I would need 2 args for this.
-                                    String RSAKey = RSA.formatKey(key, args[3]);
+                                    String RSAKey = key + "," + args[3];
                                     System.out.println(new String(RSA.decrypt(byteInputText, RSAKey)));
                                     break;
                                 default:
@@ -194,10 +201,21 @@ public class CryptotronThreeThousand {
                     }
                     break;
                 case "letterfrequency":
-
+                    Hashtable<Character, Integer> letters = Tools.letterFrequency(inputText);
+                    int total = letters.values().stream().mapToInt(Integer::intValue).sum();
+                    Enumeration<Character> enumeration = letters.keys();
+                    List<Character> list = Collections.list(enumeration);
+                    Collections.sort(list);
+                    System.out.println(" letter    | count      | %");
+                    System.out.println("-----------+------------+-----------");
+                    for (Character letter : list) {
+                        int count = letters.get(letter);
+                        double percentage = (double)count / total * 100.0;
+                        System.out.println(" " + padRight(Character.toString(letter), 9) + " | " + padRight(String.valueOf(count), 10) + " | " +  String.format("%.2f", percentage) + "%");
+                    }
                     break;
                 case "indexofcoincidence":
-                    System.out.println(Tools.indexOfCoincidence(inputText));
+                    System.out.println("Index of coincidence: " + Tools.indexOfCoincidence(inputText));
                     break;
             }
         } catch (Exception e) {
@@ -223,5 +241,18 @@ public class CryptotronThreeThousand {
         System.err.println("type(or cat if using linux) filename.txt | java CryptotronThreeThousand action cipher key > destinationfilename.txt");
         System.err.println("action being one of the following:");
         System.err.println("encrypt, decrypt, letterfrequency, indexofcoincidence");
+    }
+
+    private static String padRight(String inputString, int length) {
+        if (inputString.length() >= length) {
+            return inputString;
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(inputString);
+        while (sb.length() < length) {
+            sb.append(' ');
+        }
+
+        return sb.toString();
     }
 }
